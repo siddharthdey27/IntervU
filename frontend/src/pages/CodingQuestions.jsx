@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { listQuestions } from "../api/codingApi";
 
-const difficultyColor = {
-  EASY: "text-green-600 bg-green-50",
-  MEDIUM: "text-yellow-600 bg-yellow-50",
-  HARD: "text-red-600 bg-red-50",
+const difficultyConfig = {
+  EASY:   { text: 'Easy',   classes: 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' },
+  MEDIUM: { text: 'Medium', classes: 'text-amber-400 bg-amber-500/10 border border-amber-500/20' },
+  HARD:   { text: 'Hard',   classes: 'text-rose-400 bg-rose-500/10 border border-rose-500/20' },
 };
 
 export default function CodingQuestions() {
@@ -20,30 +20,77 @@ export default function CodingQuestions() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="p-8 text-gray-500">Loading questions...</div>;
-  if (error) return <div className="p-8 text-red-600">Failed to load questions: {error}</div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[60vh]">
+        <div className="flex flex-col items-center gap-3">
+          <svg className="animate-spin h-8 w-8 text-brand-400" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+          </svg>
+          <p className="text-sm text-slate-500">Loading questions…</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-[60vh]">
+        <div className="glass-card p-8 text-center max-w-md">
+          <div className="text-4xl mb-3">😵</div>
+          <p className="text-red-400 font-medium mb-1">Failed to load questions</p>
+          <p className="text-sm text-slate-500">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <h1 className="text-2xl font-semibold mb-4">Coding Questions</h1>
-      <div className="divide-y divide-gray-200 border rounded-lg overflow-hidden">
-        {questions.map((q) => (
-          <Link
-            key={q.id}
-            to={`/coding-questions/${q.id}`}
-            className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition"
-          >
-            <div>
-              <div className="font-medium">{q.title}</div>
-              <div className="text-sm text-gray-500">{q.category}</div>
-            </div>
-            <span className={`text-xs font-medium px-2 py-1 rounded-full ${difficultyColor[q.difficulty]}`}>
-              {q.difficulty}
-            </span>
-          </Link>
-        ))}
+    <div className="mx-auto max-w-3xl px-4 sm:px-6 py-10 animate-fade-in">
+      {/* Header */}
+      <div className="mb-6 flex items-center gap-3">
+        <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center shadow-lg">
+          <span className="text-lg">⟨/⟩</span>
+        </div>
+        <div>
+          <h1 className="page-heading text-2xl">Coding Challenges</h1>
+          <p className="text-sm text-slate-400">{questions.length} problems available</p>
+        </div>
+      </div>
+
+      {/* Question list */}
+      <div className="glass-card overflow-hidden divide-y divide-white/[0.06]">
+        {questions.map((q, i) => {
+          const diff = difficultyConfig[q.difficulty] || difficultyConfig.EASY;
+          return (
+            <Link
+              key={q.id}
+              to={`/coding-questions/${q.id}`}
+              className={`flex items-center justify-between px-5 py-4 transition-all duration-200 hover:bg-white/[0.04] group
+                          animate-fade-in-up`}
+              style={{ animationDelay: `${i * 40}ms`, animationFillMode: 'both' }}
+            >
+              <div className="flex items-center gap-4">
+                <span className="text-xs text-slate-600 font-mono w-6 text-right">{i + 1}</span>
+                <div>
+                  <div className="font-medium text-slate-200 group-hover:text-white transition-colors">{q.title}</div>
+                  <div className="text-xs text-slate-500 mt-0.5">{q.category}</div>
+                </div>
+              </div>
+              <span className={`badge ${diff.classes} text-xs`}>
+                {diff.text}
+              </span>
+            </Link>
+          );
+        })}
+
         {questions.length === 0 && (
-          <div className="px-4 py-6 text-gray-500 text-sm">No questions yet.</div>
+          <div className="px-5 py-12 text-center">
+            <div className="text-4xl mb-3">📝</div>
+            <p className="text-slate-400 font-medium">No questions yet</p>
+            <p className="text-xs text-slate-600 mt-1">Check back later or ask your admin to add coding problems.</p>
+          </div>
         )}
       </div>
     </div>

@@ -4,13 +4,14 @@ const client = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'
 });
 
+// Attach access token to every request
 client.interceptors.request.use((config) => {
   const token = localStorage.getItem('accessToken');
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
-// Response interceptor: on 401, attempt token refresh then retry
+// Response interceptor — auto-refresh on 401
 let isRefreshing = false;
 let failedQueue = [];
 
@@ -27,8 +28,10 @@ client.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // Only attempt refresh on 401 and if we haven't retried yet
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
+        // Queue this request until the refresh completes
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         }).then((token) => {
@@ -42,7 +45,7 @@ client.interceptors.response.use(
 
       const refreshToken = localStorage.getItem('refreshToken');
       if (!refreshToken) {
-        isRefreshing = false;
+        // No refresh token — redirect to login
         localStorage.clear();
         window.location.href = '/login';
         return Promise.reject(error);
@@ -53,11 +56,14 @@ client.interceptors.response.use(
           `${client.defaults.baseURL}/auth/refresh`,
           { refreshToken }
         );
+
+        // Persist new tokens
         localStorage.setItem('accessToken', data.accessToken);
         localStorage.setItem('refreshToken', data.refreshToken);
         const userInfo = { userId: data.userId, fullName: data.fullName, email: data.email };
         localStorage.setItem('user', JSON.stringify(userInfo));
 
+        // Retry the original request + queued requests
         processQueue(null, data.accessToken);
         originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
         return client(originalRequest);

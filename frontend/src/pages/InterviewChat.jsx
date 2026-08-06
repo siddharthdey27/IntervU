@@ -33,33 +33,88 @@ export default function InterviewChat() {
   };
 
   return (
-    <div className="mx-auto flex h-[calc(100vh-64px)] max-w-2xl flex-col px-4 py-4">
-      <div className="flex-1 space-y-3 overflow-y-auto rounded-lg border border-slate-200 bg-white p-4">
+    <div className="mx-auto flex h-[calc(100vh-4rem)] max-w-3xl flex-col px-4 py-4 animate-fade-in">
+      {/* Header */}
+      <div className="mb-3 flex items-center gap-3">
+        <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-brand-500 to-purple-600 flex items-center justify-center shadow-glow-sm">
+          <span className="text-base">🎙️</span>
+        </div>
+        <div>
+          <h1 className="text-sm font-semibold text-white">Mock Interview</h1>
+          <p className="text-xs text-slate-500">Session {sessionId?.slice(0, 8)}…</p>
+        </div>
+      </div>
+
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto rounded-2xl glass-card p-4 space-y-4">
+        {messages.length === 0 && !sending && (
+          <div className="flex flex-col items-center justify-center h-full text-center text-slate-500">
+            <div className="text-4xl mb-3">💬</div>
+            <p className="text-sm">Your interview conversation will appear here.</p>
+            <p className="text-xs text-slate-600 mt-1">The AI interviewer will ask you questions based on your resume.</p>
+          </div>
+        )}
+
         {messages.map((m, i) => (
-          <div key={i} className={`flex ${m.sender === 'USER' ? 'justify-end' : 'justify-start'}`}>
+          <div key={i} className={`flex ${m.sender === 'USER' ? 'justify-end' : 'justify-start'} animate-fade-in`}>
+            {m.sender !== 'USER' && (
+              <div className="mr-2 mt-1 flex-shrink-0 h-7 w-7 rounded-full bg-gradient-to-br from-brand-500 to-purple-600 flex items-center justify-center text-xs text-white font-bold shadow-glow-sm">
+                AI
+              </div>
+            )}
             <div
-              className={`max-w-[80%] rounded-lg px-4 py-2 text-sm ${
-                m.sender === 'USER' ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-800'
-              }`}
+              className={`max-w-[78%] rounded-2xl px-4 py-3 text-sm leading-relaxed
+                ${m.sender === 'USER'
+                  ? 'bg-gradient-to-br from-brand-500 to-brand-600 text-white rounded-br-md shadow-glow-sm'
+                  : 'bg-white/[0.06] text-slate-200 rounded-bl-md border border-white/[0.06]'
+                }`}
             >
               {m.content}
             </div>
+            {m.sender === 'USER' && (
+              <div className="ml-2 mt-1 flex-shrink-0 h-7 w-7 rounded-full bg-slate-600 flex items-center justify-center text-xs text-white font-bold">
+                U
+              </div>
+            )}
           </div>
         ))}
-        {sending && <p className="text-xs text-slate-400">AI is thinking…</p>}
+
+        {sending && (
+          <div className="flex items-center gap-2">
+            <div className="h-7 w-7 rounded-full bg-gradient-to-br from-brand-500 to-purple-600 flex items-center justify-center text-xs text-white font-bold shadow-glow-sm">
+              AI
+            </div>
+            <div className="bg-white/[0.06] rounded-2xl rounded-bl-md border border-white/[0.06] px-4 py-3">
+              <div className="flex items-center gap-1.5">
+                <div className="h-2 w-2 rounded-full bg-brand-400 animate-bounce" style={{ animationDelay: '0ms' }} />
+                <div className="h-2 w-2 rounded-full bg-brand-400 animate-bounce" style={{ animationDelay: '150ms' }} />
+                <div className="h-2 w-2 rounded-full bg-brand-400 animate-bounce" style={{ animationDelay: '300ms' }} />
+              </div>
+            </div>
+          </div>
+        )}
         <div ref={bottomRef} />
       </div>
+
+      {/* Input */}
       <form onSubmit={handleSend} className="mt-3 flex gap-2">
         <input
-          type="text" value={input} onChange={(e) => setInput(e.target.value)}
+          id="chat-input"
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
           placeholder="Type your answer…"
-          className="flex-1 rounded border border-slate-300 px-3 py-2 text-sm"
+          className="input-field flex-1 !rounded-xl"
+          disabled={sending}
         />
         <button
-          disabled={sending}
-          className="rounded bg-brand-600 px-4 py-2 text-sm text-white hover:bg-brand-700 disabled:opacity-50"
+          id="chat-send-btn"
+          disabled={sending || !input.trim()}
+          className="btn-primary !px-5 !rounded-xl"
         >
-          Send
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+          </svg>
         </button>
       </form>
     </div>
