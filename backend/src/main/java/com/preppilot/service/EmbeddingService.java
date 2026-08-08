@@ -3,11 +3,14 @@ package com.preppilot.service;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.model.embedding.EmbeddingModel;
-import dev.langchain4j.model.googleai.GoogleAiGeminiEmbeddingModel;
 import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class EmbeddingService {
@@ -24,17 +27,13 @@ public class EmbeddingService {
     @Value("${app.ai.embedding-model:text-embedding-004}")
     private String embeddingModelName;
 
-    private EmbeddingModel embeddingModel;
+    private EmbeddingModel openAiEmbeddingModel;
+    private final RestTemplate restTemplate = new RestTemplate();
 
     @PostConstruct
     void init() {
-        if ("gemini".equalsIgnoreCase(provider)) {
-            this.embeddingModel = GoogleAiGeminiEmbeddingModel.builder()
-                    .apiKey(geminiApiKey)
-                    .modelName(embeddingModelName)
-                    .build();
-        } else {
-            this.embeddingModel = OpenAiEmbeddingModel.builder()
+        if ("openai".equalsIgnoreCase(provider)) {
+            this.openAiEmbeddingModel = OpenAiEmbeddingModel.builder()
                     .apiKey(openAiApiKey)
                     .modelName(embeddingModelName)
                     .build();
@@ -43,7 +42,37 @@ public class EmbeddingService {
 
     /** Returns the embedding vector as a float[] for a given piece of text. */
     public float[] embed(String text) {
-        Embedding embedding = embeddingModel.embed(TextSegment.from(text)).content();
-        return embedding.vector();
+        if ("gemini".equalsIgnoreCase(provider)) {
+            return embedGemini(text);
+        } else {
+            Embedding embedding = openAiEmbeddingModel.embed(TextSegment.from(text)).content();
+            return embedding.vector();
+        }
+    }
+
+    private float[] embedGemini(String text) {
+        String url = "https://generativelanguage.googleapis.com/v1beta/models/" 
+                + embeddingModelName + ":embedContent?key=" + geminiApiKey;
+
+        Map<String, Object> body = Map.of(
+                "model", "models/" + embeddingModelName,
+                "content", Map.of("parts", List.of(Map.of("text", text)))
+        );
+
+        try {
+            Map<?, ?> response = restTemplate.postForObject(url, body, Map.class);
+            if (response != null && response.containsKey("embedding")) {
+                Map<?, ?> embeddingObj = (Map<?, ?>) response.get("embedding");
+                List<?> values = (List<?>) embeddingObj.get("values");
+                float[] vector = new float[values.size()];
+                for (int i = 0; i < values.size(); i++) {
+                    vector[i] = ((Number) values.get(i)).floatValue();
+                }
+                return vector;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to generate Gemini embedding: " + e.getMessage(), e);
+        }
+        throw new RuntimeException("Empty response from Gemini embedding API");
     }
 }

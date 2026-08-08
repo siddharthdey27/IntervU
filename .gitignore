@@ -1,5 +1,6 @@
 # Maven / Java
 backend/target/
+backend/.mvn_bin/
 *.class
 *.jar
 *.war
