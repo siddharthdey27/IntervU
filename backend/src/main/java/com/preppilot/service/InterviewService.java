@@ -89,6 +89,10 @@ public class InterviewService {
         String systemPrompt = BASE_SYSTEM_PROMPT.formatted(topicLabel, companySuffix, context);
 
         List<InterviewMessage> history = messageRepository.findBySessionIdOrderByCreatedAtAsc(session.getId());
+        int maxTurns = 10;
+        if (history.size() > maxTurns) {
+            history = history.subList(history.size() - maxTurns, history.size());
+        }
         List<String[]> conversation = history.stream()
                 .map(m -> new String[]{m.getSender(), m.getContent()})
                 .toList();

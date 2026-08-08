@@ -5,6 +5,7 @@ import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.data.message.SystemMessage;
 import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.model.chat.ChatLanguageModel;
+import dev.langchain4j.model.googleai.GoogleAiGeminiChatModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,21 +17,35 @@ import java.util.List;
 @Service
 public class ChatModelService {
 
-    @Value("${app.ai.openai-api-key}")
+    @Value("${app.ai.provider:gemini}")
+    private String provider;
+
+    @Value("${app.ai.openai-api-key:}")
     private String openAiApiKey;
 
-    @Value("${app.ai.chat-model}")
+    @Value("${app.ai.gemini-api-key:}")
+    private String geminiApiKey;
+
+    @Value("${app.ai.chat-model:gemini-1.5-flash}")
     private String chatModelName;
 
     private ChatLanguageModel chatModel;
 
     @PostConstruct
     void init() {
-        this.chatModel = OpenAiChatModel.builder()
-                .apiKey(openAiApiKey)
-                .modelName(chatModelName)
-                .temperature(0.7)
-                .build();
+        if ("gemini".equalsIgnoreCase(provider)) {
+            this.chatModel = GoogleAiGeminiChatModel.builder()
+                    .apiKey(geminiApiKey)
+                    .modelName(chatModelName)
+                    .temperature(0.7)
+                    .build();
+        } else {
+            this.chatModel = OpenAiChatModel.builder()
+                    .apiKey(openAiApiKey)
+                    .modelName(chatModelName)
+                    .temperature(0.7)
+                    .build();
+        }
     }
 
     /**

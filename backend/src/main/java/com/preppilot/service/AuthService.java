@@ -51,7 +51,7 @@ public class AuthService {
      * Validates the refresh token and issues a new access + refresh token pair.
      */
     public AuthResponse refreshToken(String refreshToken) {
-        if (!jwtService.isTokenValid(refreshToken)) {
+        if (!jwtService.isRefreshToken(refreshToken)) {
             throw new IllegalArgumentException("Invalid or expired refresh token");
         }
 

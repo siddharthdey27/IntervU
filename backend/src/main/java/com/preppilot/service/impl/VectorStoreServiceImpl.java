@@ -21,12 +21,24 @@ public class VectorStoreServiceImpl {
     private final JdbcTemplate jdbcTemplate;
 
     public void insertResumeChunk(UUID id, UUID resumeId, int chunkIndex, String content, float[] embedding) {
-        jdbcTemplate.execute((PreparedStatement ignored) -> null); // no-op to keep lambda pattern consistent
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(
                     "insert into resume_chunks (id, resume_id, chunk_index, content, embedding) values (?, ?, ?, ?, ?)");
             ps.setObject(1, id);
             ps.setObject(2, resumeId);
+            ps.setInt(3, chunkIndex);
+            ps.setString(4, content);
+            ps.setObject(5, new PGvector(embedding));
+            return ps;
+        });
+    }
+
+    public void insertKnowledgeChunk(UUID id, UUID documentId, int chunkIndex, String content, float[] embedding) {
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement(
+                    "insert into knowledge_chunks (id, document_id, chunk_index, content, embedding) values (?, ?, ?, ?, ?)");
+            ps.setObject(1, id);
+            ps.setObject(2, documentId);
             ps.setInt(3, chunkIndex);
             ps.setString(4, content);
             ps.setObject(5, new PGvector(embedding));
