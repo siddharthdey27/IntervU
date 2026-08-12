@@ -1,21 +1,26 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import * as authApi from '../api/auth.js';
+import { clearSession, getStoredUser, hasUsableSession, persistSession } from '../auth/session.js';
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    const stored = localStorage.getItem('user');
-    return stored ? JSON.parse(stored) : null;
-  });
+  const [user, setUser] = useState(getStoredUser);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
 
-  const persistSession = (data) => {
-    localStorage.setItem('accessToken', data.accessToken);
-    localStorage.setItem('refreshToken', data.refreshToken);
-    const userInfo = { userId: data.userId, fullName: data.fullName, email: data.email };
-    localStorage.setItem('user', JSON.stringify(userInfo));
-    setUser(userInfo);
-  };
+  useEffect(() => {
+    const onUpdated = (event) => setUser(event.detail || getStoredUser());
+    const onCleared = () => setUser(null);
+    window.addEventListener('auth:session-updated', onUpdated);
+    window.addEventListener('auth:session-cleared', onCleared);
+    if (!hasUsableSession()) clearSession();
+    setUser(hasUsableSession() ? getStoredUser() : null);
+    setIsAuthLoading(false);
+    return () => {
+      window.removeEventListener('auth:session-updated', onUpdated);
+      window.removeEventListener('auth:session-cleared', onCleared);
+    };
+  }, []);
 
   const login = async (email, password) => {
     const data = await authApi.login(email, password);
@@ -28,12 +33,11 @@ export function AuthProvider({ children }) {
   };
 
   const logout = () => {
-    localStorage.clear();
-    setUser(null);
+    clearSession();
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout }}>
+    <AuthContext.Provider value={{ user, isAuthLoading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

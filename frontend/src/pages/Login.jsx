@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import { getApiErrorMessage } from '../api/errors.js';
+import ErrorBanner from '../components/ErrorBanner.jsx';
 
 export default function Login() {
   const { login } = useAuth();
@@ -18,7 +20,7 @@ export default function Login() {
       await login(email, password);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.error || 'Login failed');
+      setError(getApiErrorMessage(err, 'Login failed'));
     } finally {
       setLoading(false);
     }
@@ -68,11 +70,7 @@ export default function Login() {
               />
             </div>
 
-            {error && (
-              <div className="flex items-center gap-2 rounded-lg bg-red-500/10 border border-red-500/20 px-4 py-2.5 text-sm text-red-400 animate-scale-in">
-                <span>⚠</span> {error}
-              </div>
-            )}
+            <ErrorBanner message={error} />
 
             <button
               id="login-submit"

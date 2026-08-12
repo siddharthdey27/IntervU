@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getProgress } from '../api/progressApi.js';
+import { getApiErrorMessage } from '../api/errors.js';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend
@@ -16,7 +17,7 @@ export default function Progress() {
   useEffect(() => {
     getProgress()
       .then(setData)
-      .catch((err) => setError(err.message))
+      .catch((err) => setError(getApiErrorMessage(err, 'Failed to load progress')))
       .finally(() => setLoading(false));
   }, []);
 

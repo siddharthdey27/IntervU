@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { clearSession, persistSession } from '../auth/session.js';
 
 const client = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'
@@ -46,7 +47,9 @@ client.interceptors.response.use(
       const refreshToken = localStorage.getItem('refreshToken');
       if (!refreshToken) {
         // No refresh token — redirect to login
-        localStorage.clear();
+        processQueue(error, null);
+        clearSession();
+        isRefreshing = false;
         window.location.href = '/login';
         return Promise.reject(error);
       }
@@ -58,10 +61,7 @@ client.interceptors.response.use(
         );
 
         // Persist new tokens
-        localStorage.setItem('accessToken', data.accessToken);
-        localStorage.setItem('refreshToken', data.refreshToken);
-        const userInfo = { userId: data.userId, fullName: data.fullName, email: data.email };
-        localStorage.setItem('user', JSON.stringify(userInfo));
+        persistSession(data);
 
         // Retry the original request + queued requests
         processQueue(null, data.accessToken);
@@ -69,7 +69,7 @@ client.interceptors.response.use(
         return client(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
-        localStorage.clear();
+        clearSession();
         window.location.href = '/login';
         return Promise.reject(refreshError);
       } finally {

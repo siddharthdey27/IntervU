@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import Editor from "@monaco-editor/react";
 import { getQuestion, runCode, submitCode } from "../api/codingApi";
+import { getApiErrorMessage } from '../api/errors.js';
 
 const LANGUAGES = [
   { value: "python",     label: "Python",     monaco: "python" },
@@ -44,7 +45,7 @@ export default function CodeEditor() {
       const result = await runCode(id, { language, sourceCode: code, stdin });
       setOutput(result);
     } catch (err) {
-      setOutput({ status: "Error", stderr: err.message });
+      setOutput({ status: "Error", stderr: getApiErrorMessage(err, 'Code execution failed') });
     } finally {
       setBusy(false);
     }
@@ -58,7 +59,7 @@ export default function CodeEditor() {
       const result = await submitCode(id, { language, sourceCode: code });
       setSubmission(result);
     } catch (err) {
-      setSubmission({ status: "ERROR", passedTestCount: 0, totalTestCount: 0, visibleResults: [] });
+      setSubmission({ status: "ERROR", errorMessage: getApiErrorMessage(err, 'Code submission failed'), passedTestCount: 0, totalTestCount: 0, visibleResults: [] });
     } finally {
       setBusy(false);
     }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { listQuestions } from "../api/codingApi";
+import { getApiErrorMessage } from '../api/errors.js';
 
 const difficultyConfig = {
   EASY:   { text: 'Easy',   classes: 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' },
@@ -16,7 +17,7 @@ export default function CodingQuestions() {
   useEffect(() => {
     listQuestions()
       .then(setQuestions)
-      .catch((err) => setError(err.message))
+      .catch((err) => setError(getApiErrorMessage(err, 'Failed to load questions')))
       .finally(() => setLoading(false));
   }, []);
 

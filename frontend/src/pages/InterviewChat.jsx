@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getTranscript, sendMessage } from '../api/interviews.js';
+import { getApiErrorMessage } from '../api/errors.js';
+import ErrorBanner from '../components/ErrorBanner.jsx';
 
 export default function InterviewChat() {
   const { sessionId } = useParams();
@@ -10,11 +12,12 @@ export default function InterviewChat() {
   const [listening, setListening] = useState(false);
   const [voiceMode, setVoiceMode] = useState(false);
   const [voiceSupported, setVoiceSupported] = useState(false);
+  const [error, setError] = useState('');
   const bottomRef = useRef(null);
   const recognitionRef = useRef(null);
 
   useEffect(() => {
-    getTranscript(sessionId).then(setMessages).catch(() => {});
+    getTranscript(sessionId).then(setMessages).catch((err) => setError(getApiErrorMessage(err, 'Failed to load transcript')));
   }, [sessionId]);
 
   useEffect(() => {
@@ -74,6 +77,8 @@ export default function InterviewChat() {
       const res = await sendMessage(sessionId, userText);
       setMessages((prev) => [...prev, { sender: 'AI', content: res.aiMessage }]);
       speak(res.aiMessage);
+    } catch (err) {
+      setError(getApiErrorMessage(err, 'Failed to send message'));
     } finally {
       setSending(false);
     }
@@ -91,6 +96,7 @@ export default function InterviewChat() {
           <p className="text-xs text-slate-500">Session {sessionId?.slice(0, 8)}…</p>
         </div>
       </div>
+      <ErrorBanner message={error} className="mb-3" />
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto rounded-2xl glass-card p-4 space-y-4">

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import { getApiErrorMessage } from '../api/errors.js';
+import ErrorBanner from '../components/ErrorBanner.jsx';
 
 export default function Register() {
   const { register } = useAuth();
@@ -19,7 +21,7 @@ export default function Register() {
       await register(fullName, email, password);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.error || 'Registration failed');
+      setError(getApiErrorMessage(err, 'Registration failed'));
     } finally {
       setLoading(false);
     }
@@ -82,11 +84,7 @@ export default function Register() {
               />
             </div>
 
-            {error && (
-              <div className="flex items-center gap-2 rounded-lg bg-red-500/10 border border-red-500/20 px-4 py-2.5 text-sm text-red-400 animate-scale-in">
-                <span>⚠</span> {error}
-              </div>
-            )}
+            <ErrorBanner message={error} />
 
             <button
               id="register-submit"

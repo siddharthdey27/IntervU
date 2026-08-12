@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { uploadResume, listResumes } from '../api/resumes.js';
 import { startSession } from '../api/interviews.js';
+import { getApiErrorMessage } from '../api/errors.js';
+import ErrorBanner from '../components/ErrorBanner.jsx';
 
 export default function ResumeUpload() {
   const [file, setFile] = useState(null);
@@ -20,7 +22,7 @@ export default function ResumeUpload() {
     listResumes().then((data) => {
       setResumes(data);
       if (data.length > 0) setSelectedResume(data[0].id);
-    }).catch(() => {});
+    }).catch((err) => setError(getApiErrorMessage(err, 'Failed to load resumes')));
   }, []);
 
   const handleUpload = async (e) => {
@@ -34,7 +36,7 @@ export default function ResumeUpload() {
       setSelectedResume(resume.id);
       setFile(null);
     } catch (err) {
-      setError(err.response?.data?.error || 'Upload failed');
+      setError(getApiErrorMessage(err, 'Upload failed'));
     } finally {
       setUploading(false);
     }
@@ -51,7 +53,7 @@ export default function ResumeUpload() {
       });
       navigate(`/interview/${session.id}`);
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to start session');
+      setError(getApiErrorMessage(err, 'Failed to start session'));
       setStarting(false);
     }
   };
@@ -128,11 +130,7 @@ export default function ResumeUpload() {
           )}
         </form>
 
-        {error && (
-          <div className="mt-3 flex items-center gap-2 rounded-lg bg-red-500/10 border border-red-500/20 px-4 py-2.5 text-sm text-red-400 animate-scale-in">
-            <span>⚠</span> {error}
-          </div>
-        )}
+        <ErrorBanner message={error} className="mt-3" />
 
         {/* Resume list */}
         {resumes.length > 0 && (
