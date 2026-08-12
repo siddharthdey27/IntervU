@@ -16,6 +16,7 @@ import java.io.IOException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.List;
+import java.util.Locale;
 
 @Component
 @RequiredArgsConstructor
@@ -38,6 +39,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (jwtService.isAccessToken(token)) {
             String userId = jwtService.extractUserId(token);
             String role = jwtService.extractRole(token);
+            role = role == null || role.isBlank() ? "USER" : role.toUpperCase(Locale.ROOT);
             var authToken = new UsernamePasswordAuthenticationToken(
                     userId,
                     null,
