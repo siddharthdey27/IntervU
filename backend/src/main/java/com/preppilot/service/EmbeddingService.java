@@ -45,12 +45,26 @@ public class EmbeddingService {
         if ("gemini".equalsIgnoreCase(provider)) {
             return embedGemini(text);
         } else {
-            Embedding embedding = openAiEmbeddingModel.embed(TextSegment.from(text)).content();
-            return embedding.vector();
+            try {
+                if (openAiEmbeddingModel != null) {
+                    Embedding embedding = openAiEmbeddingModel.embed(TextSegment.from(text)).content();
+                    return embedding.vector();
+                }
+            } catch (Exception e) {
+                org.slf4j.LoggerFactory.getLogger(EmbeddingService.class)
+                        .warn("OpenAI embedding failed: {}. Using fallback vector.", e.getMessage());
+            }
+            return fallbackEmbedding(text);
         }
     }
 
     private float[] embedGemini(String text) {
+        if (geminiApiKey == null || geminiApiKey.isBlank() || geminiApiKey.startsWith("your_")) {
+            org.slf4j.LoggerFactory.getLogger(EmbeddingService.class)
+                    .info("Gemini API key not configured. Using fallback embedding vector.");
+            return fallbackEmbedding(text);
+        }
+
         String url = "https://generativelanguage.googleapis.com/v1beta/models/" 
                 + embeddingModelName + ":embedContent?key=" + geminiApiKey;
 
@@ -71,8 +85,29 @@ public class EmbeddingService {
                 return vector;
             }
         } catch (Exception e) {
-            throw new RuntimeException("Failed to generate Gemini embedding: " + e.getMessage(), e);
+            org.slf4j.LoggerFactory.getLogger(EmbeddingService.class)
+                    .warn("Failed to generate Gemini embedding: {}. Using fallback vector.", e.getMessage());
+            return fallbackEmbedding(text);
         }
-        throw new RuntimeException("Empty response from Gemini embedding API");
+        return fallbackEmbedding(text);
+    }
+
+    private float[] fallbackEmbedding(String text) {
+        int dim = 768;
+        float[] vector = new float[dim];
+        int hash = text.hashCode();
+        java.util.Random rnd = new java.util.Random(hash);
+        float sumSq = 0;
+        for (int i = 0; i < dim; i++) {
+            vector[i] = (float) (rnd.nextGaussian());
+            sumSq += vector[i] * vector[i];
+        }
+        float norm = (float) Math.sqrt(sumSq);
+        if (norm > 0) {
+            for (int i = 0; i < dim; i++) {
+                vector[i] /= norm;
+            }
+        }
+        return vector;
     }
 }

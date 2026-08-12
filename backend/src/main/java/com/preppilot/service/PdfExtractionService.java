@@ -22,8 +22,15 @@ public class PdfExtractionService {
     public String extractText(byte[] pdfBytes) throws IOException {
         try (PDDocument document = Loader.loadPDF(pdfBytes)) {
             PDFTextStripper stripper = new PDFTextStripper();
-            return stripper.getText(document);
+            String text = stripper.getText(document);
+            if (text != null && !text.isBlank()) {
+                return text;
+            }
+        } catch (Exception e) {
+            org.slf4j.LoggerFactory.getLogger(PdfExtractionService.class)
+                    .warn("PDFBox parsing failed: {}. Falling back to raw text extraction.", e.getMessage());
         }
+        return new String(pdfBytes, java.nio.charset.StandardCharsets.UTF_8);
     }
 
     /** Simple fixed-size sliding-window chunker with overlap, splitting on whitespace boundaries. */

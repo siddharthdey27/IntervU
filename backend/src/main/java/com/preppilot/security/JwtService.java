@@ -30,24 +30,26 @@ public class JwtService {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateAccessToken(String subjectUserId, String email) {
-        return buildToken(subjectUserId, email, TYPE_ACCESS, accessTokenExpirationMs);
+    public String generateAccessToken(String subjectUserId, String email, String role) {
+        return buildToken(subjectUserId, email, role, TYPE_ACCESS, accessTokenExpirationMs);
     }
 
     public String generateRefreshToken(String subjectUserId, String email) {
-        return buildToken(subjectUserId, email, TYPE_REFRESH, refreshTokenExpirationMs);
+        return buildToken(subjectUserId, email, null, TYPE_REFRESH, refreshTokenExpirationMs);
     }
 
-    private String buildToken(String subjectUserId, String email, String type, long expirationMs) {
+    private String buildToken(String subjectUserId, String email, String role, String type, long expirationMs) {
         Date now = new Date();
-        return Jwts.builder()
+        var tokenBuilder = Jwts.builder()
                 .subject(subjectUserId)
                 .claim("email", email)
                 .claim("type", type)
                 .issuedAt(now)
-                .expiration(new Date(now.getTime() + expirationMs))
-                .signWith(key())
-                .compact();
+                .expiration(new Date(now.getTime() + expirationMs));
+        if (role != null) {
+            tokenBuilder.claim("role", role);
+        }
+        return tokenBuilder.signWith(key()).compact();
     }
 
     public String extractUserId(String token) {
@@ -60,6 +62,10 @@ public class JwtService {
 
     public String extractTokenType(String token) {
         return extractClaim(token, c -> c.get("type", String.class));
+    }
+
+    public String extractRole(String token) {
+        return extractClaim(token, c -> c.get("role", String.class));
     }
 
     public boolean isTokenValid(String token) {

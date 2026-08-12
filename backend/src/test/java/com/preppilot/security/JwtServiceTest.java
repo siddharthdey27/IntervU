@@ -25,7 +25,7 @@ class JwtServiceTest {
         String userId = UUID.randomUUID().toString();
         String email = "test@example.com";
 
-        String accessToken = jwtService.generateAccessToken(userId, email);
+        String accessToken = jwtService.generateAccessToken(userId, email, "ADMIN");
 
         assertNotNull(accessToken);
         assertTrue(jwtService.isTokenValid(accessToken));
@@ -33,6 +33,7 @@ class JwtServiceTest {
         assertFalse(jwtService.isRefreshToken(accessToken));
         assertEquals(userId, jwtService.extractUserId(accessToken));
         assertEquals(email, jwtService.extractEmail(accessToken));
+        assertEquals("ADMIN", jwtService.extractRole(accessToken));
     }
 
     @Test

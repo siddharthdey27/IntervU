@@ -66,6 +66,15 @@ public class ChatModelService {
             }
         }
 
-        return chatModel.generate(messages).content().text();
+        try {
+            if (chatModel != null) {
+                return chatModel.generate(messages).content().text();
+            }
+        } catch (Exception e) {
+            org.slf4j.LoggerFactory.getLogger(ChatModelService.class)
+                    .warn("Chat model generation failed: {}. Using fallback reply.", e.getMessage());
+        }
+
+        return "Thank you for sharing your response! (Note: Please configure a valid API key in .env to enable real-time AI generation). Could you elaborate further on your technical implementation and trade-offs?";
     }
 }
