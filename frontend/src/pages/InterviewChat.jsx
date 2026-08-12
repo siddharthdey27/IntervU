@@ -7,7 +7,11 @@ export default function InterviewChat() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
+  const [listening, setListening] = useState(false);
+  const [voiceMode, setVoiceMode] = useState(false);
+  const [voiceSupported, setVoiceSupported] = useState(false);
   const bottomRef = useRef(null);
+  const recognitionRef = useRef(null);
 
   useEffect(() => {
     getTranscript(sessionId).then(setMessages).catch(() => {});
@@ -16,6 +20,48 @@ export default function InterviewChat() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    setVoiceSupported(Boolean(SpeechRecognition && window.speechSynthesis));
+
+    return () => {
+      recognitionRef.current?.stop();
+      window.speechSynthesis?.cancel();
+    };
+  }, []);
+
+  const toggleListening = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) return;
+
+    if (listening) {
+      recognitionRef.current?.stop();
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.onstart = () => setListening(true);
+    recognition.onresult = (event) => {
+      const transcript = Array.from(event.results)
+        .map((result) => result[0].transcript)
+        .join('');
+      setInput(transcript);
+    };
+    recognition.onerror = () => setListening(false);
+    recognition.onend = () => setListening(false);
+    recognitionRef.current = recognition;
+    recognition.start();
+  };
+
+  const speak = (text) => {
+    if (!voiceMode || !window.speechSynthesis || !text) return;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+  };
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -27,6 +73,7 @@ export default function InterviewChat() {
     try {
       const res = await sendMessage(sessionId, userText);
       setMessages((prev) => [...prev, { sender: 'AI', content: res.aiMessage }]);
+      speak(res.aiMessage);
     } finally {
       setSending(false);
     }
@@ -107,6 +154,36 @@ export default function InterviewChat() {
           className="input-field flex-1 !rounded-xl"
           disabled={sending}
         />
+        {voiceSupported && (
+          <button
+            type="button"
+            onClick={toggleListening}
+            disabled={sending}
+            aria-label={listening ? 'Stop listening' : 'Use voice input'}
+            title={listening ? 'Stop listening' : 'Use voice input'}
+            className={`rounded-xl border px-3 transition-colors ${listening
+              ? 'border-red-400/50 bg-red-400/15 text-red-300'
+              : 'border-white/10 bg-white/[0.06] text-slate-300 hover:bg-white/10'
+            }`}
+          >
+            {listening ? '⏹' : '🎙️'}
+          </button>
+        )}
+        {voiceSupported && (
+          <button
+            type="button"
+            onClick={() => setVoiceMode((enabled) => !enabled)}
+            aria-pressed={voiceMode}
+            aria-label={voiceMode ? 'Disable spoken AI replies' : 'Enable spoken AI replies'}
+            title={voiceMode ? 'Disable spoken AI replies' : 'Enable spoken AI replies'}
+            className={`rounded-xl border px-3 transition-colors ${voiceMode
+              ? 'border-brand-400/50 bg-brand-400/15 text-brand-300'
+              : 'border-white/10 bg-white/[0.06] text-slate-300 hover:bg-white/10'
+            }`}
+          >
+            🔊
+          </button>
+        )}
         <button
           id="chat-send-btn"
           disabled={sending || !input.trim()}
