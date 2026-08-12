@@ -5,20 +5,17 @@ import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.Duration;
-import java.time.Instant;
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/** Simple process-local sliding-window limiter for ad-hoc Judge0 executions. */
+/** Simple process-local token bucket limiter for ad-hoc Judge0 executions. */
 @Service
 public class CodeExecutionRateLimiter {
 
-    private final int maxRequests;
-    private final Duration window;
+    private final double capacity;
+    private final double refillTokensPerNano;
     private final Clock clock;
-    private final Map<String, Deque<Instant>> requestsByUser = new ConcurrentHashMap<>();
+    private final Map<String, Bucket> bucketsByUser = new ConcurrentHashMap<>();
 
     public CodeExecutionRateLimiter(
             @Value("${app.rate-limit.code-run.max-requests:10}") int maxRequests,
@@ -30,24 +27,33 @@ public class CodeExecutionRateLimiter {
         if (maxRequests < 1 || window.isZero() || window.isNegative()) {
             throw new IllegalArgumentException("Rate-limit values must be positive");
         }
-        this.maxRequests = maxRequests;
-        this.window = window;
+        this.capacity = maxRequests;
+        this.refillTokensPerNano = (double) maxRequests / window.toNanos();
         this.clock = clock;
     }
 
     public boolean tryAcquire(String userId) {
-        Instant now = clock.instant();
-        Deque<Instant> requests = requestsByUser.computeIfAbsent(userId, ignored -> new ArrayDeque<>());
-        synchronized (requests) {
-            Instant cutoff = now.minus(window);
-            while (!requests.isEmpty() && requests.peekFirst().isBefore(cutoff)) {
-                requests.removeFirst();
-            }
-            if (requests.size() >= maxRequests) {
+        long nowNanos = clock.instant().toEpochMilli() * 1_000_000L;
+        Bucket bucket = bucketsByUser.computeIfAbsent(userId, ignored -> new Bucket(capacity, nowNanos));
+        synchronized (bucket) {
+            long elapsedNanos = Math.max(0L, nowNanos - bucket.lastRefillNanos);
+            bucket.tokens = Math.min(capacity, bucket.tokens + elapsedNanos * refillTokensPerNano);
+            bucket.lastRefillNanos = nowNanos;
+            if (bucket.tokens < 1.0d) {
                 return false;
             }
-            requests.addLast(now);
+            bucket.tokens -= 1.0d;
             return true;
+        }
+    }
+
+    private static final class Bucket {
+        private double tokens;
+        private long lastRefillNanos;
+
+        private Bucket(double tokens, long lastRefillNanos) {
+            this.tokens = tokens;
+            this.lastRefillNanos = lastRefillNanos;
         }
     }
 }
