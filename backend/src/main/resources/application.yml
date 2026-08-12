@@ -57,6 +57,11 @@ app:
     chunk-overlap: 100
     top-k: 5
 
+  rate-limit:
+    code-run:
+      max-requests: ${CODE_RUN_RATE_LIMIT:10}
+      window-seconds: ${CODE_RUN_RATE_WINDOW_SECONDS:60}
+
 logging:
   level:
     com.preppilot: INFO
