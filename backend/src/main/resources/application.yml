@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 spring:
   application:
@@ -61,6 +61,9 @@ app:
     code-run:
       max-requests: ${CODE_RUN_RATE_LIMIT:10}
       window-seconds: ${CODE_RUN_RATE_WINDOW_SECONDS:60}
+
+judge0:
+  base-url: ${JUDGE0_BASE_URL:http://judge0-server:2358}
 
 logging:
   level:
