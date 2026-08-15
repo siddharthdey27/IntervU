@@ -44,11 +44,10 @@
       <artifactId>spring-boot-starter-security</artifactId>
     </dependency>
 
-    <!-- Postgres (Supabase) -->
+    <!-- Postgres (Supabase) — compile scope needed because pgvector extends PGobject -->
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <scope>runtime</scope>
     </dependency>
 
     <!-- pgvector JDBC support -->
