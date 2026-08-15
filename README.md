@@ -8,13 +8,12 @@ job descriptions, and company docs.
 
 | Layer      | Tech |
 |------------|------|
-| Frontend   | React (Vite) + Tailwind CSS |
-| Backend    | Java Spring Boot, Spring Security (JWT) |
+| Frontend   | React (Vite) + Tailwind CSS (Vercel) |
+| Backend    | Java Spring Boot, Spring Security (JWT) (Render) |
 | Database   | Supabase (Postgres) |
 | Vector DB  | pgvector (via Supabase Postgres extension) |
-| AI         | LangChain4j + OpenAI (chat + embeddings) |
-| Storage    | AWS S3 (resume PDFs) |
-| Deploy     | Docker, Nginx, GitHub Actions -> EC2 |
+| AI         | LangChain4j + Gemini / OpenAI (chat + embeddings) |
+| Deploy     | Docker on Render (Backend) + Vercel (Frontend) |
 
 ## 1. Set up Supabase
 
@@ -34,7 +33,7 @@ job descriptions, and company docs.
 
 ```bash
 cp .env.example .env
-# then fill in: Supabase creds, JWT_SECRET, OPENAI_API_KEY, AWS S3 creds
+# then fill in: Supabase creds, JWT_SECRET, GEMINI_API_KEY / OPENAI_API_KEY
 ```
 
 ## 3. Run locally (without Docker)
@@ -62,25 +61,18 @@ Frontend runs on `http://localhost:5173`, backend on `http://localhost:8080`.
 docker compose --env-file .env up --build
 ```
 
-Frontend served on port 80, backend API on port 8080.
+## 5. Deploy to Production
 
-## 5. Deploy to AWS EC2
-
-1. Launch an EC2 instance (Ubuntu 22.04), install Docker + Docker Compose.
-2. Clone the repo into `/opt/prep-pilot` and add your `.env` file there.
-3. Add these GitHub Actions secrets: `EC2_HOST`, `EC2_USER`, `EC2_SSH_KEY`.
-4. Push to `main` — `.github/workflows/deploy.yml` builds both services and
-   SSHes into EC2 to `docker compose up -d --build`.
-5. Point Nginx (or an EC2 security-group + Route53 record) at the box; the
-   frontend container already runs its own Nginx on port 80.
+- **Backend**: Deploy on [Render](https://render.com) using the `render.yaml` blueprint (Docker web service).
+- **Frontend**: Deploy on [Vercel](https://vercel.com) with root directory set to `frontend` and `VITE_API_BASE_URL` pointing to your Render API URL + `/api`.
+- See `RENDER.md` for complete step-by-step instructions.
 
 ## How the RAG pipeline works
 
-1. **Upload**: PDF → S3 (`S3StorageService`) + text extracted via PDFBox
-   (`PdfExtractionService`).
+1. **Upload**: PDF text is extracted directly in-memory via PDFBox (`PdfExtractionService`).
 2. **Chunk + embed**: text is split into ~800-char overlapping chunks, each
-   embedded via OpenAI's `text-embedding-3-small` (`EmbeddingService`), and
-   stored in `resume_chunks.embedding` (pgvector) via raw JDBC
+   embedded via Gemini/OpenAI (`EmbeddingService`), and stored in
+   `resume_chunks.embedding` (pgvector) via raw JDBC
    (`VectorStoreServiceImpl` — Hibernate can't map `vector` columns directly).
 3. **Retrieve**: on each interview turn, the latest user message is embedded
    and a cosine-similarity search (`<=>` operator) pulls the top-k most

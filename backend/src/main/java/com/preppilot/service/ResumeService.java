@@ -15,26 +15,25 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ResumeService {
 
-    private final S3StorageService s3StorageService;
     private final PdfExtractionService pdfExtractionService;
     private final EmbeddingService embeddingService;
     private final VectorStoreServiceImpl vectorStore;
     private final ResumeRepository resumeRepository;
 
     /**
-     * Full ingestion pipeline: upload PDF to S3 -> extract text -> chunk ->
+     * Full ingestion pipeline: extract text -> chunk ->
      * embed each chunk -> persist resume + chunks (with embeddings) to Supabase Postgres.
      */
     public Resume ingestResume(UUID userId, MultipartFile file) throws IOException {
         byte[] bytes = file.getBytes();
 
-        String s3Key = s3StorageService.uploadResume(userId, file.getOriginalFilename(), bytes);
+        String storageKey = "resumes/%s/%s-%s".formatted(userId, UUID.randomUUID(), file.getOriginalFilename());
         String rawText = pdfExtractionService.extractText(bytes);
 
         Resume resume = Resume.builder()
                 .userId(userId)
                 .fileName(file.getOriginalFilename())
-                .s3Key(s3Key)
+                .s3Key(storageKey)
                 .rawText(rawText)
                 .build();
         resume = resumeRepository.save(resume);

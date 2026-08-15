@@ -45,13 +45,6 @@ app:
     embedding-model: ${AI_EMBEDDING_MODEL:text-embedding-004}
     embedding-dimension: ${AI_EMBEDDING_DIM:768}
 
-  aws:
-    s3:
-      bucket: ${AWS_S3_BUCKET:prep-pilot-resumes}
-      region: ${AWS_REGION:ap-south-1}
-      access-key: ${AWS_ACCESS_KEY_ID:}
-      secret-key: ${AWS_SECRET_ACCESS_KEY:}
-
   rag:
     chunk-size: 800
     chunk-overlap: 100

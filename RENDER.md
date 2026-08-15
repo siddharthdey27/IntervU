@@ -1,10 +1,27 @@
-# Deploying IntervU on Render
+# Deploying IntervU
 
-1. In Render, choose **New → Blueprint** and connect the GitHub repository.
-2. Select the repository's `main` branch. Render will read `render.yaml` and create the API and frontend services.
-3. Enter the `sync: false` values when prompted. Keep secrets in Render, never in Git.
-4. After the frontend service URL is known, set the API service's `CORS_ALLOWED_ORIGINS` to that exact `https://...onrender.com` URL, then redeploy the API.
-5. Set the frontend service's `VITE_API_BASE_URL` to the API URL plus `/api`, for example `https://inter-u-api.onrender.com/api`, then redeploy the frontend.
-6. Run `backend/src/main/resources/db/migration/V1__init.sql` and subsequent migrations against the production Postgres/Supabase database before first use. Promote the first admin with `backend/src/main/resources/db/bootstrap_admin.sql`.
+## 1. Backend on Render
 
-The API health check is `GET /health`. Render supplies `PORT`; the backend reads it automatically.
+1. In Render ([render.com](https://render.com)), choose **New → Blueprint** and connect your GitHub repository (`siddharthdey27/IntervU`).
+2. Select the repository's `main` branch. Render will read `render.yaml` and create the `interv-u-api` service.
+3. Enter the `sync: false` values when prompted (Supabase DB credentials, API keys).
+4. Note your API URL (e.g., `https://interv-u-api.onrender.com`).
+
+## 2. Frontend on Vercel
+
+1. In Vercel ([vercel.com](https://vercel.com)), click **Add New → Project** and import the `siddharthdey27/IntervU` repository.
+2. Configure project settings:
+   - **Root Directory**: `frontend`
+   - **Framework Preset**: Vite
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+3. Add Environment Variable:
+   - `VITE_API_BASE_URL` = `https://<your-render-api-url>/api` (e.g. `https://interv-u-api.onrender.com/api`)
+4. Click **Deploy**.
+
+## 3. Link CORS on Render
+
+Once your Vercel frontend URL is live (e.g., `https://interv-u.vercel.app`):
+1. Go to your `interv-u-api` service on Render dashboard.
+2. In **Environment**, set `CORS_ALLOWED_ORIGINS` to your Vercel URL (e.g., `https://interv-u.vercel.app`).
+3. Trigger a manual redeploy on Render.
