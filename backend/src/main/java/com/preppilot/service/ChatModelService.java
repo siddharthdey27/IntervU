@@ -33,18 +33,27 @@ public class ChatModelService {
 
     @PostConstruct
     void init() {
-        if ("gemini".equalsIgnoreCase(provider)) {
-            this.chatModel = GoogleAiGeminiChatModel.builder()
-                    .apiKey(geminiApiKey)
-                    .modelName(chatModelName)
-                    .temperature(0.7)
-                    .build();
-        } else {
-            this.chatModel = OpenAiChatModel.builder()
-                    .apiKey(openAiApiKey)
-                    .modelName(chatModelName)
-                    .temperature(0.7)
-                    .build();
+        try {
+            if ("gemini".equalsIgnoreCase(provider)) {
+                if (geminiApiKey != null && !geminiApiKey.isBlank() && !geminiApiKey.startsWith("your_")) {
+                    this.chatModel = GoogleAiGeminiChatModel.builder()
+                            .apiKey(geminiApiKey)
+                            .modelName(chatModelName)
+                            .temperature(0.7)
+                            .build();
+                }
+            } else {
+                if (openAiApiKey != null && !openAiApiKey.isBlank() && !openAiApiKey.startsWith("your_")) {
+                    this.chatModel = OpenAiChatModel.builder()
+                            .apiKey(openAiApiKey)
+                            .modelName(chatModelName)
+                            .temperature(0.7)
+                            .build();
+                }
+            }
+        } catch (Exception e) {
+            org.slf4j.LoggerFactory.getLogger(ChatModelService.class)
+                    .warn("Failed to initialize AI ChatModel: {}. Fallback will be used.", e.getMessage());
         }
     }
 
