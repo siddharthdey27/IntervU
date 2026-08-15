@@ -17,6 +17,7 @@ public class CodeExecutionRateLimiter {
     private final Clock clock;
     private final Map<String, Bucket> bucketsByUser = new ConcurrentHashMap<>();
 
+    @org.springframework.beans.factory.annotation.Autowired
     public CodeExecutionRateLimiter(
             @Value("${app.rate-limit.code-run.max-requests:10}") int maxRequests,
             @Value("${app.rate-limit.code-run.window-seconds:60}") long windowSeconds) {
