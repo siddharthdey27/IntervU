@@ -7,7 +7,8 @@ COPY pom.xml .
 COPY src ./src
 
 # Build JAR package skipping tests for fast deployment
-RUN mvn clean package -DskipTests
+RUN mvn clean package -DskipTests -e
+
 
 # Runtime stage
 FROM eclipse-temurin:17-jre-alpine
