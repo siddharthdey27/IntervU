@@ -30,6 +30,17 @@ class KnowledgeSecurityMockMvcTest {
     @MockBean
     private JwtAuthFilter jwtAuthFilter;
 
+    @org.junit.jupiter.api.BeforeEach
+    void setUp() throws Exception {
+        org.mockito.Mockito.doAnswer(invocation -> {
+            jakarta.servlet.ServletRequest req = invocation.getArgument(0);
+            jakarta.servlet.ServletResponse res = invocation.getArgument(1);
+            jakarta.servlet.FilterChain chain = invocation.getArgument(2);
+            chain.doFilter(req, res);
+            return null;
+        }).when(jwtAuthFilter).doFilter(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any());
+    }
+
     private static final String VALID_REQUEST = """
             {"sourceType":"COMPANY_DOC","companyName":"Acme","title":"About","content":"Interview guidance"}
             """;

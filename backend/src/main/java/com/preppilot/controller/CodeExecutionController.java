@@ -45,6 +45,10 @@ public class CodeExecutionController {
                                                         @RequestBody CodeRunRequest request,
                                                         Authentication authentication) throws Exception {
         String userId = authentication.getName();
+        if (!codeExecutionRateLimiter.tryAcquire(userId)) {
+            throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS,
+                    "Code execution limit exceeded; try again later");
+        }
         return ResponseEntity.ok(codeExecutionService.submit(userId, questionId, request));
     }
 }
