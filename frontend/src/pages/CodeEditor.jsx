@@ -20,20 +20,32 @@ export default function CodeEditor() {
   const [submission, setSubmission] = useState(null);
   const [busy, setBusy] = useState(false);
   const [activeTab, setActiveTab] = useState("output"); // output | submission
+  const [loadError, setLoadError] = useState("");
+
+  const boilerplateFor = (q, lang) => {
+    try {
+      const boilerplate = JSON.parse(q.boilerplate || "{}");
+      return boilerplate[lang] || "";
+    } catch {
+      return "";
+    }
+  };
 
   useEffect(() => {
-    getQuestion(id).then((q) => {
-      setQuestion(q);
-      const boilerplate = JSON.parse(q.boilerplate || "{}");
-      setCode(boilerplate[language] || "");
-    });
+    setQuestion(null);
+    setLoadError("");
+    getQuestion(id)
+      .then((q) => {
+        setQuestion(q);
+        setCode(boilerplateFor(q, language));
+      })
+      .catch((err) => setLoadError(getApiErrorMessage(err, "Failed to load this coding question")));
   }, [id]);
 
   const handleLanguageChange = (lang) => {
     setLanguage(lang);
     if (question) {
-      const boilerplate = JSON.parse(question.boilerplate || "{}");
-      setCode(boilerplate[lang] || "");
+      setCode(boilerplateFor(question, lang));
     }
   };
 
@@ -70,6 +82,19 @@ export default function CodeEditor() {
     MEDIUM: { classes: 'text-amber-400 bg-amber-500/10 border border-amber-500/20' },
     HARD:   { classes: 'text-rose-400 bg-rose-500/10 border border-rose-500/20' },
   };
+
+  if (loadError) {
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-4rem)] px-4">
+        <div className="glass-card max-w-md p-8 text-center">
+          <div className="text-4xl mb-3">😵</div>
+          <p className="text-red-400 font-medium">Unable to open the challenge</p>
+          <p className="mt-1 text-sm text-slate-500">{loadError}</p>
+          <Link to="/coding-questions" className="btn-ghost mt-5 inline-flex !text-xs">Back to challenges</Link>
+        </div>
+      </div>
+    );
+  }
 
   if (!question) {
     return (

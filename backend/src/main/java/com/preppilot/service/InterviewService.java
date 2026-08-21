@@ -55,6 +55,7 @@ public class InterviewService {
     public String continueSession(UUID userId, UUID sessionId, String userAnswer) {
         InterviewSession session = sessionRepository.findById(sessionId)
                 .orElseThrow(() -> new IllegalArgumentException("Session not found"));
+        ensureSessionOwner(session, userId);
 
         messageRepository.save(InterviewMessage.builder()
                 .sessionId(sessionId)
@@ -73,8 +74,17 @@ public class InterviewService {
         return aiReply;
     }
 
-    public List<InterviewMessage> getTranscript(UUID sessionId) {
+    public List<InterviewMessage> getTranscript(UUID userId, UUID sessionId) {
+        InterviewSession session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new IllegalArgumentException("Session not found"));
+        ensureSessionOwner(session, userId);
         return messageRepository.findBySessionIdOrderByCreatedAtAsc(sessionId);
+    }
+
+    private void ensureSessionOwner(InterviewSession session, UUID userId) {
+        if (!session.getUserId().equals(userId)) {
+            throw new SecurityException("You do not have access to this interview session");
+        }
     }
 
     private String generateNextQuestion(InterviewSession session, UUID userId, String latestUserInput) {

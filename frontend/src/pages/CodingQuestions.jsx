@@ -14,11 +14,17 @@ export default function CodingQuestions() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
+  const loadQuestions = () => {
+    setLoading(true);
+    setError(null);
     listQuestions()
       .then(setQuestions)
       .catch((err) => setError(getApiErrorMessage(err, 'Failed to load questions')))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    loadQuestions();
   }, []);
 
   if (loading) {
@@ -42,6 +48,7 @@ export default function CodingQuestions() {
           <div className="text-4xl mb-3">😵</div>
           <p className="text-red-400 font-medium mb-1">Failed to load questions</p>
           <p className="text-sm text-slate-500">{error}</p>
+          <button onClick={loadQuestions} className="btn-ghost mt-4 !text-xs">Try again</button>
         </div>
       </div>
     );

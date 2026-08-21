@@ -36,7 +36,8 @@ public class InterviewController {
     }
 
     @GetMapping("/{sessionId}/transcript")
-    public ResponseEntity<List<InterviewMessage>> transcript(@PathVariable String sessionId) {
-        return ResponseEntity.ok(interviewService.getTranscript(UUID.fromString(sessionId)));
+    public ResponseEntity<List<InterviewMessage>> transcript(Authentication auth, @PathVariable String sessionId) {
+        UUID userId = UUID.fromString(auth.getName());
+        return ResponseEntity.ok(interviewService.getTranscript(userId, UUID.fromString(sessionId)));
     }
 }

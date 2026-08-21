@@ -203,7 +203,7 @@ export default function ResumeUpload() {
           <button
             id="start-interview-btn"
             onClick={handleStartInterview}
-            disabled={!selectedResume || starting}
+            disabled={starting}
             className="btn-primary w-full !py-3"
           >
             {starting ? (
@@ -213,6 +213,11 @@ export default function ResumeUpload() {
               </span>
             ) : '🚀 Start interview'}
           </button>
+          {!selectedResume && (
+            <p className="text-center text-xs text-slate-500">
+              You can start without a resume; the interviewer will use the topic you selected.
+            </p>
+          )}
         </div>
       </div>
     </div>

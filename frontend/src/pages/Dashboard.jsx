@@ -6,7 +6,7 @@ const cards = [
     to: '/resume',
     icon: '🎤',
     title: 'Mock Interview',
-    description: 'Upload your resume, pick a topic, and dive into a RAG-powered AI mock interview.',
+    description: 'Pick a topic and dive into an AI mock interview, optionally tailored to your uploaded resume.',
     gradient: 'from-brand-500 to-purple-600',
     glowColor: 'rgba(99,102,241,0.15)',
   },
