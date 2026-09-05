@@ -66,7 +66,7 @@ public class Judge0Service {
         "java",       "openjdk-jdk-21+35",
         "python",     "cpython-3.10.15",
         "javascript", "nodejs-20.17.0",
-        "cpp",        "gcc-14.2.0"
+        "cpp",        "gcc-13.2.0"
     );
 
     public record Judge0Result(String stdout, String stderr, String compileOutput,
@@ -105,6 +105,7 @@ public class Judge0Service {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("User-Agent", "PrepPilot-App/1.0");
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
 
         String url = wandboxBaseUrl + "/compile.json";

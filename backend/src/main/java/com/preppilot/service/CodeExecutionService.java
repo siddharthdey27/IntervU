@@ -44,7 +44,11 @@ public class CodeExecutionService {
             ? "Compilation Error"
             : result.statusDescription();
 
-        return new CodeRunResult(result.stdout(), result.stderr() != null ? result.stderr() : result.compileOutput(),
+        String err = (result.stderr() != null && !result.stderr().isBlank())
+            ? result.stderr()
+            : result.compileOutput();
+
+        return new CodeRunResult(result.stdout(), err,
             status, result.timeMs(), result.memoryKb());
     }
 
@@ -78,8 +82,11 @@ public class CodeExecutionService {
                 && (result.compileOutput() == null || result.compileOutput().isBlank());
 
             if (testPassed) passed++;
-            if (result.stderr() != null && !result.stderr().isBlank()) hadError = true;
-            lastStderr = result.stderr();
+            String tcErr = (result.stderr() != null && !result.stderr().isBlank())
+                ? result.stderr()
+                : result.compileOutput();
+            if (tcErr != null && !tcErr.isBlank()) hadError = true;
+            lastStderr = tcErr;
             lastTimeMs = result.timeMs();
             lastMemoryKb = result.memoryKb();
 

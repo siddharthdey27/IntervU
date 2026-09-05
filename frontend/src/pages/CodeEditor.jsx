@@ -11,6 +11,27 @@ const LANGUAGES = [
   { value: "cpp",        label: "C++",        monaco: "cpp" },
 ];
 
+const DEFAULT_BOILERPLATES = {
+  python:     "# Read input from standard input\n# your code here\n",
+  java:       "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        // your code here\n    }\n}\n",
+  javascript: "const fs = require('fs');\nconst input = fs.readFileSync(0, 'utf-8').trim();\n// your code here\n",
+  cpp:        "#include <iostream>\n#include <vector>\n#include <string>\n#include <sstream>\n#include <algorithm>\nusing namespace std;\n\nint main() {\n    // your code here\n    return 0;\n}\n",
+};
+
+// Fallback question-specific C++ boilerplates for questions 1 to 10
+const QUESTION_CPP_BOILERPLATES = {
+  1: "#include <iostream>\n#include <sstream>\n#include <vector>\nusing namespace std;\nint main() {\n    string line;\n    getline(cin, line);\n    istringstream iss(line);\n    vector<int> nums;\n    int x; while (iss >> x) nums.push_back(x);\n    int target; cin >> target;\n    // your code here\n    return 0;\n}",
+  2: "#include <iostream>\n#include <algorithm>\n#include <string>\nusing namespace std;\nint main() {\n    string s;\n    getline(cin, s);\n    // your code here\n    return 0;\n}",
+  3: "#include <iostream>\nusing namespace std;\nint main() {\n    int n;\n    cin >> n;\n    // your code here\n    return 0;\n}",
+  4: "#include <iostream>\n#include <stack>\n#include <string>\nusing namespace std;\nint main() {\n    string s;\n    getline(cin, s);\n    // your code here\n    return 0;\n}",
+  5: "#include <iostream>\n#include <string>\n#include <cctype>\nusing namespace std;\nint main() {\n    string s;\n    getline(cin, s);\n    // your code here\n    return 0;\n}",
+  6: "#include <iostream>\n#include <sstream>\n#include <vector>\nusing namespace std;\nint main() {\n    string line;\n    getline(cin, line);\n    istringstream iss(line);\n    vector<int> nums;\n    int x; while (iss >> x) nums.push_back(x);\n    // your code here\n    return 0;\n}",
+  7: "#include <iostream>\n#include <sstream>\n#include <vector>\nusing namespace std;\nint main() {\n    string line1, line2;\n    getline(cin, line1);\n    getline(cin, line2);\n    istringstream iss1(line1), iss2(line2);\n    vector<int> a, b;\n    int x;\n    while (iss1 >> x) a.push_back(x);\n    while (iss2 >> x) b.push_back(x);\n    // your code here\n    return 0;\n}",
+  8: "#include <iostream>\nusing namespace std;\nint main() {\n    int n;\n    cin >> n;\n    // your code here\n    return 0;\n}",
+  9: "#include <iostream>\n#include <sstream>\n#include <vector>\n#include <string>\nusing namespace std;\nint main() {\n    string line;\n    getline(cin, line);\n    istringstream iss(line);\n    vector<string> words;\n    string w;\n    while (iss >> w) words.push_back(w);\n    // your code here\n    return 0;\n}",
+  10: "#include <iostream>\n#include <sstream>\n#include <vector>\nusing namespace std;\nint main() {\n    string line;\n    getline(cin, line);\n    istringstream iss(line);\n    vector<int> height;\n    int x; while (iss >> x) height.push_back(x);\n    // your code here\n    return 0;\n}"
+};
+
 export default function CodeEditor() {
   const { id } = useParams();
   const [question, setQuestion] = useState(null);
@@ -20,16 +41,23 @@ export default function CodeEditor() {
   const [output, setOutput] = useState(null);
   const [submission, setSubmission] = useState(null);
   const [busy, setBusy] = useState(false);
-  const [activeTab, setActiveTab] = useState("output"); // output | submission
+  const [activeTab, setActiveTab] = useState("output"); // output | customInput
   const [loadError, setLoadError] = useState("");
 
   const boilerplateFor = (q, lang) => {
+    if (!q) return DEFAULT_BOILERPLATES[lang] || "";
     try {
-      const boilerplate = JSON.parse(q.boilerplate || "{}");
-      return boilerplate[lang] || "";
+      const boilerplate = typeof q.boilerplate === "string" ? JSON.parse(q.boilerplate || "{}") : (q.boilerplate || {});
+      if (boilerplate && boilerplate[lang] && boilerplate[lang].trim().length > 0) {
+        return boilerplate[lang];
+      }
     } catch {
-      return "";
+      // ignore JSON parse error and fallback
     }
+    if (lang === "cpp" && q.id && QUESTION_CPP_BOILERPLATES[q.id]) {
+      return QUESTION_CPP_BOILERPLATES[q.id];
+    }
+    return DEFAULT_BOILERPLATES[lang] || "";
   };
 
   useEffect(() => {

@@ -26,12 +26,7 @@ public class CodingQuestionSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (repo.count() > 0) {
-            log.info("Coding questions already seeded ({} found), skipping.", repo.count());
-            return;
-        }
-
-        log.info("Seeding coding questions...");
+        log.info("Seeding and syncing coding questions with full multi-language support...");
 
         // ── 1. Two Sum ──────────────────────────────────────────────
         save("Two Sum", "EASY", "Arrays",
@@ -207,7 +202,7 @@ public class CodingQuestionSeeder implements CommandLineRunner {
 
     private void save(String title, String difficulty, String category,
                       String description, String boilerplate, String testCases) {
-        CodingQuestion q = new CodingQuestion();
+        CodingQuestion q = repo.findByTitle(title).orElseGet(CodingQuestion::new);
         q.setTitle(title);
         q.setDifficulty(difficulty);
         q.setCategory(category);
