@@ -55,8 +55,14 @@ app:
       max-requests: ${CODE_RUN_RATE_LIMIT:10}
       window-seconds: ${CODE_RUN_RATE_WINDOW_SECONDS:60}
 
+code-exec:
+  provider: ${CODE_EXEC_PROVIDER:piston}   # piston (free, no Docker) | judge0 (self-hosted)
+
 judge0:
   base-url: ${JUDGE0_BASE_URL:http://judge0-server:2358}
+
+piston:
+  base-url: ${PISTON_BASE_URL:https://emkc.org/api/v2/piston}
 
 logging:
   level:
