@@ -42,6 +42,9 @@ public class Judge0Service {
     @Value("${piston.base-url:https://emkc.org/api/v2/piston}")
     private String pistonBaseUrl;
 
+    @Value("${wandbox.base-url:https://wandbox.org/api}")
+    private String wandboxBaseUrl;
+
     // Judge0 CE language IDs
     private static final Map<String, Integer> JUDGE0_LANGUAGE_IDS = Map.of(
         "java", 62,
@@ -58,6 +61,14 @@ public class Judge0Service {
         "cpp",        new String[]{"c++", "10.2.0"}
     );
 
+    // Wandbox compiler identifiers
+    private static final Map<String, String> WANDBOX_COMPILERS = Map.of(
+        "java",       "openjdk-jdk-21+35",
+        "python",     "cpython-3.10.15",
+        "javascript", "nodejs-20.17.0",
+        "cpp",        "gcc-14.2.0"
+    );
+
     public record Judge0Result(String stdout, String stderr, String compileOutput,
                                 String statusDescription, Integer timeMs, Integer memoryKb) {}
 
@@ -65,8 +76,75 @@ public class Judge0Service {
                                 int timeLimitMs, int memoryLimitKb) {
         if ("judge0".equalsIgnoreCase(provider)) {
             return executeWithJudge0(language, sourceCode, stdin, timeLimitMs, memoryLimitKb);
+        } else if ("piston".equalsIgnoreCase(provider)) {
+            return executeWithPiston(language, sourceCode, stdin);
         }
-        return executeWithPiston(language, sourceCode, stdin);
+        return executeWithWandbox(language, sourceCode, stdin);
+    }
+
+    // ── Wandbox implementation ───────────────────────────────────────
+
+    private Judge0Result executeWithWandbox(String language, String sourceCode, String stdin) {
+        String compiler = WANDBOX_COMPILERS.get(language.toLowerCase());
+        if (compiler == null) {
+            throw new IllegalArgumentException("Unsupported language: " + language);
+        }
+
+        // For Java in Wandbox, replace "public class" with "class" to avoid "class X is public, should be declared in file X.java"
+        String preparedCode = sourceCode;
+        if ("java".equalsIgnoreCase(language)) {
+            preparedCode = preparedCode.replaceAll("\\bpublic\\s+class\\b", "class");
+        }
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("compiler", compiler);
+        body.put("code", preparedCode);
+        if (stdin != null && !stdin.isEmpty()) {
+            body.put("stdin", stdin);
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
+
+        String url = wandboxBaseUrl + "/compile.json";
+        log.debug("Wandbox request: POST {} compiler={}", url, compiler);
+
+        JsonNode response;
+        try {
+            response = restTemplate.postForObject(url, entity, JsonNode.class);
+        } catch (Exception e) {
+            log.error("Wandbox API call failed: {}", e.getMessage());
+            return new Judge0Result(null, "Code execution service unavailable: " + e.getMessage(),
+                null, "Error", null, null);
+        }
+
+        if (response == null) {
+            return new Judge0Result(null, "No response from code execution service",
+                null, "Error", null, null);
+        }
+
+        String compilerError = textOrNull(response, "compiler_error");
+        if (compilerError == null || compilerError.isBlank()) {
+            compilerError = textOrNull(response, "compiler_message");
+        }
+
+        int exitStatus = response.path("status").asInt(0);
+        if (exitStatus != 0 && compilerError != null && !compilerError.isBlank()) {
+            return new Judge0Result(null, null, compilerError, "Compilation Error", null, null);
+        }
+
+        String progOut = textOrNull(response, "program_output");
+        String progErr = textOrNull(response, "program_error");
+
+        String statusDescription;
+        if (exitStatus == 0) {
+            statusDescription = "Accepted";
+        } else {
+            statusDescription = "Runtime Error (exit code " + exitStatus + ")";
+        }
+
+        return new Judge0Result(progOut, progErr, compilerError, statusDescription, null, null);
     }
 
     // ── Piston implementation ───────────────────────────────────────
