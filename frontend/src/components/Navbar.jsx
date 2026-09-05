@@ -3,10 +3,10 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { useState } from 'react';
 
 const navLinks = [
-  { to: '/',                  label: 'Dashboard',  icon: '⊞' },
-  { to: '/resume',            label: 'Interview',  icon: '🎤' },
-  { to: '/coding-questions',  label: 'Coding',     icon: '⟨/⟩' },
-  { to: '/progress',          label: 'Progress',   icon: '📊' },
+  { to: '/',                  label: 'Overview',   icon: '⌂' },
+  { to: '/resume',            label: 'Interviews', icon: '◉' },
+  { to: '/coding-questions',  label: 'Challenges', icon: '⌘' },
+  { to: '/progress',          label: 'Insights',   icon: '↗' },
 ];
 
 export default function Navbar() {
@@ -17,23 +17,23 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 border-b border-white/[0.08]"
-         style={{ background: 'rgba(9,15,31,0.78)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
-      <div className="mx-auto flex h-[4.5rem] max-w-6xl items-center justify-between px-4 sm:px-6">
+         style={{ background: 'rgba(7,11,24,0.88)', backdropFilter: 'blur(22px)', WebkitBackdropFilter: 'blur(22px)' }}>
+      <div className="mx-auto flex h-[4.75rem] max-w-6xl items-center justify-between px-4 sm:px-6">
 
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5 group">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 via-brand-500 to-purple-600 shadow-glow-sm
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-400 via-brand-500 to-indigo-600 shadow-glow-sm
                           transition-shadow duration-300 group-hover:shadow-glow">
-            <span className="text-white font-black text-sm">P</span>
+            <span className="text-white font-black text-sm">↗</span>
           </div>
           <span className="text-lg font-bold text-white tracking-tight hidden sm:inline">
-            Prep<span className="text-gradient">Pilot</span><span className="ml-1 text-[9px] font-bold tracking-[0.18em] text-slate-500">AI</span>
+            Prep<span className="text-gradient">Pilot</span><span className="ml-1 text-[9px] font-bold tracking-[0.18em] text-slate-500">STUDIO</span>
           </span>
         </Link>
 
         {/* Desktop links */}
         {user && (
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-1 rounded-2xl border border-white/[0.06] bg-white/[0.025] p-1">
             {navLinks.map((link) => {
               const active = location.pathname === link.to;
               return (
@@ -42,15 +42,12 @@ export default function Navbar() {
                   to={link.to}
                   className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
                     ${active
-                      ? 'text-white bg-brand-500/15 border border-brand-400/15'
-                      : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
+                      ? 'text-white bg-white/[0.1] shadow-sm'
+                      : 'text-slate-400 hover:text-white hover:bg-white/[0.05]'
                     }`}
                 >
                   <span className="mr-1.5 text-xs">{link.icon}</span>
                   {link.label}
-                  {active && (
-                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 w-6 rounded-full bg-brand-400" />
-                  )}
                 </Link>
               );
             })}

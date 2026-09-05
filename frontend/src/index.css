@@ -4,18 +4,18 @@
 
 /* ─── Design Tokens ───────────────────────────────────── */
 :root {
-  --color-bg-primary: #090f1f;
-  --color-bg-secondary: #121b31;
+  --color-bg-primary: #070b18;
+  --color-bg-secondary: #10172b;
   --color-bg-tertiary: #334155;
   --color-surface: rgba(30, 41, 59, 0.6);
   --color-surface-hover: rgba(51, 65, 85, 0.6);
   --color-border: rgba(148, 163, 184, 0.12);
   --color-border-hover: rgba(148, 163, 184, 0.25);
-  --color-brand: #6366f1;
-  --color-brand-light: #818cf8;
-  --glass-bg: rgba(18, 27, 49, 0.72);
-  --glass-border: rgba(167, 180, 252, 0.12);
-  --glass-shadow: 0 18px 50px rgba(2, 6, 23, 0.34);
+  --color-brand: #7c3aed;
+  --color-brand-light: #a78bfa;
+  --glass-bg: rgba(17, 24, 45, 0.82);
+  --glass-border: rgba(196, 181, 253, 0.12);
+  --glass-shadow: 0 22px 54px rgba(0, 0, 0, 0.28);
   --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-spring: 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -30,8 +30,8 @@
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     background:
-      radial-gradient(circle at 15% 10%, rgba(34, 211, 238, 0.08), transparent 25rem),
-      radial-gradient(circle at 85% 22%, rgba(139, 92, 246, 0.14), transparent 30rem),
+      radial-gradient(circle at 85% 0%, rgba(139, 92, 246, 0.18), transparent 32rem),
+      radial-gradient(circle at 5% 35%, rgba(14, 165, 233, 0.1), transparent 28rem),
       var(--color-bg-primary);
     color: #e2e8f0;
     overflow-x: hidden;
@@ -69,7 +69,7 @@
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid var(--glass-border);
     box-shadow: var(--glass-shadow);
-    border-radius: 1.25rem;
+    border-radius: 1.5rem;
     transition: all var(--transition-base);
   }
   .glass-card:hover {
@@ -93,8 +93,8 @@
     @apply relative inline-flex items-center justify-center px-6 py-2.5
            font-semibold text-white text-sm rounded-xl
            overflow-hidden;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6 55%, #a855f7);
-    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
+    background: linear-gradient(135deg, #8b5cf6, #6d28d9 65%, #4f46e5);
+    box-shadow: 0 10px 22px rgba(109, 40, 217, 0.28);
     transition: all var(--transition-base);
   }
   .btn-primary:hover {
@@ -213,10 +213,10 @@
   inset: 0;
   pointer-events: none;
   z-index: -1;
-  opacity: 0.35;
-  background-image: linear-gradient(rgba(148, 163, 184, 0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(148, 163, 184, 0.025) 1px, transparent 1px);
-  background-size: 32px 32px;
-  mask-image: linear-gradient(to bottom, black, transparent 75%);
+  opacity: 0.42;
+  background-image: radial-gradient(rgba(196, 181, 253, 0.13) .65px, transparent .65px);
+  background-size: 18px 18px;
+  mask-image: linear-gradient(to bottom, black, transparent 58%);
 }
 
 .eyebrow {
@@ -247,6 +247,36 @@
   transition: opacity var(--transition-base);
 }
 .feature-card:hover::after { opacity: 1; }
+
+.dashboard-hero {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(196, 181, 253, .16);
+  border-radius: 1.75rem;
+  background: linear-gradient(115deg, rgba(30, 27, 75, .94), rgba(17, 24, 45, .88) 62%, rgba(76, 29, 149, .74));
+  box-shadow: 0 28px 70px rgba(2, 6, 23, .3);
+}
+.dashboard-hero::after {
+  content: '';
+  position: absolute;
+  width: 20rem;
+  height: 20rem;
+  right: -6rem;
+  top: -10rem;
+  border: 1px solid rgba(196, 181, 253, .25);
+  border-radius: 999px;
+  box-shadow: 0 0 0 2.6rem rgba(139, 92, 246, .06), 0 0 0 5.2rem rgba(139, 92, 246, .04);
+}
+.action-tile {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(148, 163, 184, .1);
+  background: rgba(15, 23, 42, .66);
+  transition: transform .25s ease, border-color .25s ease, background .25s ease;
+}
+.action-tile:hover { transform: translateY(-5px); border-color: rgba(196, 181, 253, .34); background: rgba(30, 41, 68, .78); }
+.action-tile::before { content: ''; position: absolute; inset: 0 0 auto; height: 3px; background: var(--tile-color, #8b5cf6); }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }

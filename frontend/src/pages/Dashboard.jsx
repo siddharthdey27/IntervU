@@ -32,33 +32,27 @@ export default function Dashboard() {
   const { user } = useAuth();
 
   return (
-    <div className="mx-auto max-w-5xl px-4 sm:px-6 py-10 animate-fade-in">
+    <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 sm:py-10 animate-fade-in">
       {/* Hero */}
-      <div className="mb-10 grid gap-5 lg:grid-cols-[1fr_auto] lg:items-end">
-        <div>
-        <div className="eyebrow mb-3">Your preparation workspace</div>
-        <h1 className="page-heading text-3xl sm:text-4xl mb-2">
-          Welcome back, {user?.fullName?.split(' ')[0]} 👋
-        </h1>
-        <p className="text-slate-400 text-base">
-          Ready to sharpen your interview skills? Pick a module below to get started.
-        </p>
-        </div>
-        <div className="hidden lg:flex items-center gap-3 rounded-2xl border border-brand-400/15 bg-brand-500/[0.07] px-4 py-3">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500/20 text-lg">✦</span>
-          <p className="text-xs leading-relaxed text-slate-400"><span className="block font-semibold text-slate-200">Build momentum daily</span>Small practice, real progress.</p>
+      <div className="dashboard-hero mb-9 px-6 py-8 sm:px-9 sm:py-10">
+        <div className="relative z-10 max-w-2xl">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-violet-300/20 bg-violet-300/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[.14em] text-violet-200"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />Your learning studio</div>
+          <h1 className="text-3xl font-bold tracking-tight text-white sm:text-5xl">Hi, {user?.fullName?.split(' ')[0]}. <span className="text-violet-300">Ready to grow?</span></h1>
+          <p className="mt-4 max-w-xl text-sm leading-6 text-slate-300 sm:text-base">Practice with intent. Simulate the interview, solve real problems, and turn every session into measurable progress.</p>
+          <div className="mt-7 flex flex-wrap gap-3"><Link to="/resume" className="btn-primary !px-5">Start a mock interview <span className="ml-2 text-base">→</span></Link><Link to="/coding-questions" className="btn-ghost !border-white/15 !bg-white/[0.08]">Explore challenges</Link></div>
         </div>
       </div>
 
       {/* Feature cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="mb-4 flex items-end justify-between"><div><p className="eyebrow">Choose your focus</p><h2 className="mt-2 text-xl font-semibold text-white">Make today count</h2></div><span className="hidden text-xs text-slate-500 sm:block">Your tools, in one place</span></div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((card, i) => (
           <Link
             key={card.to}
             to={card.to}
             id={`dashboard-card-${card.to.replace(/\//g, '')}`}
-            className={`feature-card glass-card group relative overflow-hidden p-6 animate-fade-in-up stagger-${i + 1}`}
-            style={{ animationFillMode: 'both', '--card-glow': card.glowColor }}
+            className={`action-tile group p-6 animate-fade-in-up stagger-${i + 1}`}
+            style={{ animationFillMode: 'both', '--tile-color': i === 0 ? '#a78bfa' : i === 1 ? '#22d3ee' : '#fbbf24' }}
           >
             {/* Glow */}
             <div
@@ -72,23 +66,18 @@ export default function Dashboard() {
               <span className="text-xl">{card.icon}</span>
             </div>
 
-            <h2 className="text-lg font-semibold text-white mb-1.5">{card.title}</h2>
+            <div className="mb-2 flex items-center justify-between"><h2 className="text-lg font-semibold text-white">{card.title}</h2><span className="text-slate-500 transition-transform duration-200 group-hover:translate-x-1">↗</span></div>
             <p className="text-sm text-slate-400 leading-relaxed">{card.description}</p>
 
             {/* Arrow */}
-            <div className="mt-4 flex items-center gap-1 text-sm font-medium text-brand-400 group-hover:text-brand-300 transition-colors">
-              Get started
-              <svg className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </div>
+            <div className="mt-5 text-xs font-bold uppercase tracking-[.12em] text-violet-300 group-hover:text-violet-200">Open workspace</div>
           </Link>
         ))}
       </div>
 
       {/* Quick stats row (placeholder for when we have data) */}
-      <div className="mt-11">
-        <div className="mb-4 flex items-center justify-between"><div><p className="text-sm font-semibold text-slate-200">Your snapshot</p><p className="text-xs text-slate-500 mt-1">Progress begins with your first session.</p></div><span className="text-xs font-medium text-brand-300">Live metrics</span></div>
+      <div className="mt-10">
+        <div className="mb-4 flex items-center justify-between"><div><p className="text-sm font-semibold text-slate-200">Your snapshot</p><p className="text-xs text-slate-500 mt-1">Progress begins with your first session.</p></div><span className="text-xs font-medium text-violet-300">Live metrics</span></div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
           { label: 'Total Sessions', value: '—', icon: '📝' },
