@@ -110,17 +110,26 @@ public class Judge0Service {
         String url = wandboxBaseUrl + "/compile.json";
         log.debug("Wandbox request: POST {} compiler={}", url, compiler);
 
-        JsonNode response;
+        String rawResponse;
         try {
-            response = restTemplate.postForObject(url, entity, JsonNode.class);
+            rawResponse = restTemplate.postForObject(url, entity, String.class);
         } catch (Exception e) {
             log.error("Wandbox API call failed: {}", e.getMessage());
             return new Judge0Result(null, "Code execution service unavailable: " + e.getMessage(),
                 null, "Error", null, null);
         }
 
-        if (response == null) {
+        if (rawResponse == null || rawResponse.isBlank()) {
             return new Judge0Result(null, "No response from code execution service",
+                null, "Error", null, null);
+        }
+
+        JsonNode response;
+        try {
+            response = mapper.readTree(rawResponse);
+        } catch (Exception e) {
+            log.error("Failed to parse Wandbox response: {}", e.getMessage());
+            return new Judge0Result(null, "Failed to parse code execution response: " + e.getMessage(),
                 null, "Error", null, null);
         }
 

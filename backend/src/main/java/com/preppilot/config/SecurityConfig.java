@@ -50,6 +50,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/actuator/health").permitAll()
                 .requestMatchers("/health").permitAll()
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/coding-questions/**").permitAll()
                 .requestMatchers("/api/knowledge/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
