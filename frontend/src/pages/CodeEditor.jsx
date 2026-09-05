@@ -8,6 +8,7 @@ const LANGUAGES = [
   { value: "python",     label: "Python",     monaco: "python" },
   { value: "java",       label: "Java",       monaco: "java" },
   { value: "javascript", label: "JavaScript", monaco: "javascript" },
+  { value: "cpp",        label: "C++",        monaco: "cpp" },
 ];
 
 export default function CodeEditor() {

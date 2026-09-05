@@ -39,7 +39,8 @@ public class CodingQuestionSeeder implements CommandLineRunner {
             boilerplate(
                 "nums = list(map(int, input().split()))\ntarget = int(input())\n# your code here",
                 "import java.util.*;\npublic class Main {\n  public static void main(String[] args) {\n    Scanner sc = new Scanner(System.in);\n    String[] parts = sc.nextLine().trim().split(\" \");\n    int[] nums = new int[parts.length];\n    for (int i = 0; i < parts.length; i++) nums[i] = Integer.parseInt(parts[i]);\n    int target = Integer.parseInt(sc.nextLine().trim());\n    // your code here\n  }\n}",
-                "const lines = require(\"fs\").readFileSync(0, \"utf8\").split(\"\\n\");\nconst nums = lines[0].trim().split(\" \").map(Number);\nconst target = parseInt(lines[1]);\n// your code here"
+                "const lines = require(\"fs\").readFileSync(0, \"utf8\").split(\"\\n\");\nconst nums = lines[0].trim().split(\" \").map(Number);\nconst target = parseInt(lines[1]);\n// your code here",
+                "#include <iostream>\n#include <sstream>\n#include <vector>\nusing namespace std;\nint main() {\n    string line;\n    getline(cin, line);\n    istringstream iss(line);\n    vector<int> nums;\n    int x; while (iss >> x) nums.push_back(x);\n    int target; cin >> target;\n    // your code here\n    return 0;\n}"
             ),
             testCases(
                 tc("2 7 11 15\n9", "0 1", false),
@@ -54,7 +55,8 @@ public class CodingQuestionSeeder implements CommandLineRunner {
             boilerplate(
                 "s = input()\n# your code here",
                 "import java.util.*;\npublic class Main {\n  public static void main(String[] args) {\n    String s = new Scanner(System.in).nextLine();\n    // your code here\n  }\n}",
-                "const s = require(\"fs\").readFileSync(0, \"utf8\").trim();\n// your code here"
+                "const s = require(\"fs\").readFileSync(0, \"utf8\").trim();\n// your code here",
+                "#include <iostream>\n#include <algorithm>\n#include <string>\nusing namespace std;\nint main() {\n    string s;\n    getline(cin, s);\n    // your code here\n    return 0;\n}"
             ),
             testCases(
                 tc("hello", "olleh", false),
@@ -70,7 +72,8 @@ public class CodingQuestionSeeder implements CommandLineRunner {
             boilerplate(
                 "n = int(input())\n# your code here",
                 "import java.util.*;\npublic class Main {\n  public static void main(String[] args) {\n    int n = Integer.parseInt(new Scanner(System.in).nextLine().trim());\n    // your code here\n  }\n}",
-                "const n = parseInt(require(\"fs\").readFileSync(0, \"utf8\").trim());\n// your code here"
+                "const n = parseInt(require(\"fs\").readFileSync(0, \"utf8\").trim());\n// your code here",
+                "#include <iostream>\nusing namespace std;\nint main() {\n    int n;\n    cin >> n;\n    // your code here\n    return 0;\n}"
             ),
             testCases(
                 tc("5", "1\n2\nFizz\n4\nBuzz", false),
@@ -84,7 +87,8 @@ public class CodingQuestionSeeder implements CommandLineRunner {
             boilerplate(
                 "s = input().strip()\n# your code here",
                 "import java.util.*;\npublic class Main {\n  public static void main(String[] args) {\n    String s = new Scanner(System.in).nextLine().trim();\n    // your code here\n  }\n}",
-                "const s = require(\"fs\").readFileSync(0, \"utf8\").trim();\n// your code here"
+                "const s = require(\"fs\").readFileSync(0, \"utf8\").trim();\n// your code here",
+                "#include <iostream>\n#include <stack>\n#include <string>\nusing namespace std;\nint main() {\n    string s;\n    getline(cin, s);\n    // your code here\n    return 0;\n}"
             ),
             testCases(
                 tc("()", "true", false),
@@ -101,7 +105,8 @@ public class CodingQuestionSeeder implements CommandLineRunner {
             boilerplate(
                 "s = input()\n# your code here",
                 "import java.util.*;\npublic class Main {\n  public static void main(String[] args) {\n    String s = new Scanner(System.in).nextLine();\n    // your code here\n  }\n}",
-                "const s = require(\"fs\").readFileSync(0, \"utf8\").trim();\n// your code here"
+                "const s = require(\"fs\").readFileSync(0, \"utf8\").trim();\n// your code here",
+                "#include <iostream>\n#include <string>\n#include <cctype>\nusing namespace std;\nint main() {\n    string s;\n    getline(cin, s);\n    // your code here\n    return 0;\n}"
             ),
             testCases(
                 tc("A man, a plan, a canal: Panama", "true", false),
@@ -117,7 +122,8 @@ public class CodingQuestionSeeder implements CommandLineRunner {
             boilerplate(
                 "nums = list(map(int, input().split()))\n# your code here",
                 "import java.util.*;\npublic class Main {\n  public static void main(String[] args) {\n    Scanner sc = new Scanner(System.in);\n    String[] parts = sc.nextLine().trim().split(\" \");\n    int[] nums = new int[parts.length];\n    for (int i = 0; i < parts.length; i++) nums[i] = Integer.parseInt(parts[i]);\n    // your code here\n  }\n}",
-                "const nums = require(\"fs\").readFileSync(0, \"utf8\").trim().split(\" \").map(Number);\n// your code here"
+                "const nums = require(\"fs\").readFileSync(0, \"utf8\").trim().split(\" \").map(Number);\n// your code here",
+                "#include <iostream>\n#include <sstream>\n#include <vector>\nusing namespace std;\nint main() {\n    string line;\n    getline(cin, line);\n    istringstream iss(line);\n    vector<int> nums;\n    int x; while (iss >> x) nums.push_back(x);\n    // your code here\n    return 0;\n}"
             ),
             testCases(
                 tc("-2 1 -3 4 -1 2 1 -5 4", "6", false),
@@ -133,7 +139,8 @@ public class CodingQuestionSeeder implements CommandLineRunner {
             boilerplate(
                 "a = list(map(int, input().split()))\nb = list(map(int, input().split()))\n# your code here",
                 "import java.util.*;\npublic class Main {\n  public static void main(String[] args) {\n    Scanner sc = new Scanner(System.in);\n    String[] p1 = sc.nextLine().trim().split(\" \");\n    String[] p2 = sc.nextLine().trim().split(\" \");\n    int[] a = Arrays.stream(p1).mapToInt(Integer::parseInt).toArray();\n    int[] b = Arrays.stream(p2).mapToInt(Integer::parseInt).toArray();\n    // your code here\n  }\n}",
-                "const lines = require(\"fs\").readFileSync(0, \"utf8\").split(\"\\n\");\nconst a = lines[0].trim().split(\" \").map(Number);\nconst b = lines[1].trim().split(\" \").map(Number);\n// your code here"
+                "const lines = require(\"fs\").readFileSync(0, \"utf8\").split(\"\\n\");\nconst a = lines[0].trim().split(\" \").map(Number);\nconst b = lines[1].trim().split(\" \").map(Number);\n// your code here",
+                "#include <iostream>\n#include <sstream>\n#include <vector>\nusing namespace std;\nint main() {\n    string line1, line2;\n    getline(cin, line1);\n    getline(cin, line2);\n    istringstream iss1(line1), iss2(line2);\n    vector<int> a, b;\n    int x;\n    while (iss1 >> x) a.push_back(x);\n    while (iss2 >> x) b.push_back(x);\n    // your code here\n    return 0;\n}"
             ),
             testCases(
                 tc("1 3 5\n2 4 6", "1 2 3 4 5 6", false),
@@ -148,7 +155,8 @@ public class CodingQuestionSeeder implements CommandLineRunner {
             boilerplate(
                 "n = int(input())\n# your code here",
                 "import java.util.*;\npublic class Main {\n  public static void main(String[] args) {\n    int n = Integer.parseInt(new Scanner(System.in).nextLine().trim());\n    // your code here\n  }\n}",
-                "const n = parseInt(require(\"fs\").readFileSync(0, \"utf8\").trim());\n// your code here"
+                "const n = parseInt(require(\"fs\").readFileSync(0, \"utf8\").trim());\n// your code here",
+                "#include <iostream>\nusing namespace std;\nint main() {\n    int n;\n    cin >> n;\n    // your code here\n    return 0;\n}"
             ),
             testCases(
                 tc("2", "2", false),
@@ -164,7 +172,8 @@ public class CodingQuestionSeeder implements CommandLineRunner {
             boilerplate(
                 "words = input().split()\n# your code here",
                 "import java.util.*;\npublic class Main {\n  public static void main(String[] args) {\n    String[] words = new Scanner(System.in).nextLine().trim().split(\" \");\n    // your code here\n  }\n}",
-                "const words = require(\"fs\").readFileSync(0, \"utf8\").trim().split(\" \");\n// your code here"
+                "const words = require(\"fs\").readFileSync(0, \"utf8\").trim().split(\" \");\n// your code here",
+                "#include <iostream>\n#include <sstream>\n#include <vector>\n#include <string>\nusing namespace std;\nint main() {\n    string line;\n    getline(cin, line);\n    istringstream iss(line);\n    vector<string> words;\n    string w;\n    while (iss >> w) words.push_back(w);\n    // your code here\n    return 0;\n}"
             ),
             testCases(
                 tc("flower flow flight", "fl", false),
@@ -180,7 +189,8 @@ public class CodingQuestionSeeder implements CommandLineRunner {
             boilerplate(
                 "heights = list(map(int, input().split()))\n# your code here",
                 "import java.util.*;\npublic class Main {\n  public static void main(String[] args) {\n    Scanner sc = new Scanner(System.in);\n    String[] parts = sc.nextLine().trim().split(\" \");\n    int[] height = new int[parts.length];\n    for (int i = 0; i < parts.length; i++) height[i] = Integer.parseInt(parts[i]);\n    // your code here\n  }\n}",
-                "const height = require(\"fs\").readFileSync(0, \"utf8\").trim().split(\" \").map(Number);\n// your code here"
+                "const height = require(\"fs\").readFileSync(0, \"utf8\").trim().split(\" \").map(Number);\n// your code here",
+                "#include <iostream>\n#include <sstream>\n#include <vector>\nusing namespace std;\nint main() {\n    string line;\n    getline(cin, line);\n    istringstream iss(line);\n    vector<int> height;\n    int x; while (iss >> x) height.push_back(x);\n    // your code here\n    return 0;\n}"
             ),
             testCases(
                 tc("1 8 6 2 5 4 8 3 7", "49", false),
@@ -207,11 +217,12 @@ public class CodingQuestionSeeder implements CommandLineRunner {
         repo.save(q);
     }
 
-    private static String boilerplate(String python, String java, String javascript) {
+    private static String boilerplate(String python, String java, String javascript, String cpp) {
         return "{" +
             "\"python\":" + jsonEscape(python) + "," +
             "\"java\":" + jsonEscape(java) + "," +
-            "\"javascript\":" + jsonEscape(javascript) +
+            "\"javascript\":" + jsonEscape(javascript) + "," +
+            "\"cpp\":" + jsonEscape(cpp) +
             "}";
     }
 

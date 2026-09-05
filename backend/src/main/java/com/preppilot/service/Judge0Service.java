@@ -46,14 +46,16 @@ public class Judge0Service {
     private static final Map<String, Integer> JUDGE0_LANGUAGE_IDS = Map.of(
         "java", 62,
         "python", 71,
-        "javascript", 63
+        "javascript", 63,
+        "cpp", 54
     );
 
     // Piston language identifiers + versions
     private static final Map<String, String[]> PISTON_LANGUAGES = Map.of(
         "java",       new String[]{"java", "15.0.2"},
         "python",     new String[]{"python", "3.10.0"},
-        "javascript", new String[]{"javascript", "18.15.0"}
+        "javascript", new String[]{"javascript", "18.15.0"},
+        "cpp",        new String[]{"c++", "10.2.0"}
     );
 
     public record Judge0Result(String stdout, String stderr, String compileOutput,
@@ -152,6 +154,7 @@ public class Judge0Service {
             case "java" -> "Main.java";
             case "python" -> "main.py";
             case "javascript" -> "main.js";
+            case "cpp" -> "main.cpp";
             default -> "code";
         };
     }
