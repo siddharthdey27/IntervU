@@ -35,8 +35,18 @@ public class CodeExecutionService {
         CodingQuestion question = questionRepository.findById(questionId)
             .orElseThrow(() -> new IllegalArgumentException("Question not found: " + questionId));
 
+        String stdin = request.stdin();
+        if (stdin == null || stdin.trim().isEmpty()) {
+            try {
+                JsonNode testCases = mapper.readTree(question.getTestCases());
+                if (testCases != null && testCases.size() > 0) {
+                    stdin = testCases.get(0).path("input").asText("");
+                }
+            } catch (Exception ignored) {}
+        }
+
         var result = judge0Service.execute(
-            request.language(), request.sourceCode(), request.stdin(),
+            request.language(), request.sourceCode(), stdin,
             question.getTimeLimitMs(), question.getMemoryLimitKb()
         );
 

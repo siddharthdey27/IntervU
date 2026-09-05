@@ -90,10 +90,11 @@ public class Judge0Service {
             throw new IllegalArgumentException("Unsupported language: " + language);
         }
 
-        // For Java in Wandbox, replace "public class" with "class" to avoid "class X is public, should be declared in file X.java"
+        // For Java in Wandbox, strip package declarations and public modifiers to avoid prog.java filename mismatch
         String preparedCode = sourceCode;
         if ("java".equalsIgnoreCase(language)) {
-            preparedCode = preparedCode.replaceAll("\\bpublic\\s+class\\b", "class");
+            preparedCode = preparedCode.replaceAll("(?m)^\\s*package\\s+[^;]+;\\s*", "");
+            preparedCode = preparedCode.replaceAll("\\bpublic\\s+(class|enum|interface|record)\\b", "$1");
         }
 
         Map<String, Object> body = new HashMap<>();

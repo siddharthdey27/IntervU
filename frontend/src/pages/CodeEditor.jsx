@@ -67,6 +67,14 @@ export default function CodeEditor() {
       .then((q) => {
         setQuestion(q);
         setCode(boilerplateFor(q, language));
+        try {
+          const tc = typeof q.testCases === "string" ? JSON.parse(q.testCases || "[]") : (q.testCases || []);
+          if (tc && tc.length > 0 && tc[0].input) {
+            setStdin(tc[0].input);
+          }
+        } catch {
+          // ignore
+        }
       })
       .catch((err) => setLoadError(getApiErrorMessage(err, "Failed to load this coding question")));
   }, [id]);
