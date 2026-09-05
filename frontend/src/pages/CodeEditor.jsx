@@ -240,16 +240,16 @@ export default function CodeEditor() {
               Output
             </button>
             <button
-              onClick={() => setActiveTab('submission')}
+              onClick={() => setActiveTab('customInput')}
               className={`px-3 py-1 rounded-md text-xs transition-colors
-                ${activeTab === 'submission' ? 'bg-white/[0.08] text-white' : 'text-slate-500 hover:text-slate-300'}`}
+                ${activeTab === 'customInput' ? 'bg-white/[0.08] text-white' : 'text-slate-500 hover:text-slate-300'}`}
             >
               Custom Input
             </button>
           </div>
 
           <div className="flex-1 overflow-y-auto p-3">
-            {activeTab === 'submission' && (
+            {activeTab === 'customInput' && (
               <textarea
                 value={stdin}
                 onChange={(e) => setStdin(e.target.value)}
