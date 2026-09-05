@@ -29,8 +29,9 @@ client.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Only attempt refresh on 401 and if we haven't retried yet
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Attempt token refresh on 401 Unauthorized or 403 Forbidden (in case of expired token)
+    const isAuthError = error.response?.status === 401 || error.response?.status === 403;
+    if (isAuthError && !originalRequest._retry && !originalRequest.url?.includes('/auth/')) {
       if (isRefreshing) {
         // Queue this request until the refresh completes
         return new Promise((resolve, reject) => {
