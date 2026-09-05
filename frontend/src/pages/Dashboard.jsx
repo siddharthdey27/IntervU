@@ -34,13 +34,20 @@ export default function Dashboard() {
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 py-10 animate-fade-in">
       {/* Hero */}
-      <div className="mb-10">
+      <div className="mb-10 grid gap-5 lg:grid-cols-[1fr_auto] lg:items-end">
+        <div>
+        <div className="eyebrow mb-3">Your preparation workspace</div>
         <h1 className="page-heading text-3xl sm:text-4xl mb-2">
           Welcome back, {user?.fullName?.split(' ')[0]} 👋
         </h1>
         <p className="text-slate-400 text-base">
           Ready to sharpen your interview skills? Pick a module below to get started.
         </p>
+        </div>
+        <div className="hidden lg:flex items-center gap-3 rounded-2xl border border-brand-400/15 bg-brand-500/[0.07] px-4 py-3">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500/20 text-lg">✦</span>
+          <p className="text-xs leading-relaxed text-slate-400"><span className="block font-semibold text-slate-200">Build momentum daily</span>Small practice, real progress.</p>
+        </div>
       </div>
 
       {/* Feature cards */}
@@ -50,8 +57,8 @@ export default function Dashboard() {
             key={card.to}
             to={card.to}
             id={`dashboard-card-${card.to.replace(/\//g, '')}`}
-            className={`glass-card group relative overflow-hidden p-6 animate-fade-in-up stagger-${i + 1}`}
-            style={{ animationFillMode: 'both' }}
+            className={`feature-card glass-card group relative overflow-hidden p-6 animate-fade-in-up stagger-${i + 1}`}
+            style={{ animationFillMode: 'both', '--card-glow': card.glowColor }}
           >
             {/* Glow */}
             <div
@@ -80,7 +87,9 @@ export default function Dashboard() {
       </div>
 
       {/* Quick stats row (placeholder for when we have data) */}
-      <div className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="mt-11">
+        <div className="mb-4 flex items-center justify-between"><div><p className="text-sm font-semibold text-slate-200">Your snapshot</p><p className="text-xs text-slate-500 mt-1">Progress begins with your first session.</p></div><span className="text-xs font-medium text-brand-300">Live metrics</span></div>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
           { label: 'Total Sessions', value: '—', icon: '📝' },
           { label: 'Coding Solved', value: '—', icon: '✅' },
@@ -93,6 +102,7 @@ export default function Dashboard() {
             <div className="text-xs text-slate-500 mt-1">{stat.label}</div>
           </div>
         ))}
+      </div>
       </div>
     </div>
   );

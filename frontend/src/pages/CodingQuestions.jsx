@@ -57,13 +57,16 @@ export default function CodingQuestions() {
   return (
     <div className="mx-auto max-w-3xl px-4 sm:px-6 py-10 animate-fade-in">
       {/* Header */}
-      <div className="mb-6 flex items-center gap-3">
+      <div className="mb-7">
+        <div className="eyebrow mb-3">Practice arena</div>
+        <div className="flex items-center gap-3">
         <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center shadow-lg">
           <span className="text-lg">⟨/⟩</span>
         </div>
         <div>
           <h1 className="page-heading text-2xl">Coding Challenges</h1>
           <p className="text-sm text-slate-400">{questions.length} problems available</p>
+        </div>
         </div>
       </div>
 
@@ -75,7 +78,7 @@ export default function CodingQuestions() {
             <Link
               key={q.id}
               to={`/coding-questions/${q.id}`}
-              className={`flex items-center justify-between px-5 py-4 transition-all duration-200 hover:bg-white/[0.04] group
+              className={`flex items-center justify-between px-5 py-4 sm:px-6 transition-all duration-200 hover:bg-brand-500/[0.06] group
                           animate-fade-in-up`}
               style={{ animationDelay: `${i * 40}ms`, animationFillMode: 'both' }}
             >

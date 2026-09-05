@@ -85,9 +85,9 @@ export default function InterviewChat() {
   };
 
   return (
-    <div className="mx-auto flex h-[calc(100vh-4rem)] max-w-3xl flex-col px-4 py-4 animate-fade-in">
+    <div className="mx-auto flex h-[calc(100vh-4.5rem)] max-w-3xl flex-col px-4 py-5 animate-fade-in">
       {/* Header */}
-      <div className="mb-3 flex items-center gap-3">
+      <div className="mb-4 flex items-center gap-3 rounded-2xl border border-white/[0.07] bg-slate-900/30 px-3 py-2.5">
         <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-brand-500 to-purple-600 flex items-center justify-center shadow-glow-sm">
           <span className="text-base">🎙️</span>
         </div>
@@ -99,7 +99,7 @@ export default function InterviewChat() {
       <ErrorBanner message={error} className="mb-3" />
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto rounded-2xl glass-card p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto rounded-2xl glass-card p-4 sm:p-5 space-y-4">
         {messages.length === 0 && !sending && (
           <div className="flex flex-col items-center justify-center h-full text-center text-slate-500">
             <div className="text-4xl mb-3">💬</div>

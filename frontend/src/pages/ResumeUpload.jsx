@@ -69,13 +69,14 @@ export default function ResumeUpload() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 sm:px-6 py-10 space-y-6 animate-fade-in">
-      <div>
+      <div className="mb-2">
+        <div className="eyebrow mb-3">Personalized practice</div>
         <h1 className="page-heading text-2xl sm:text-3xl mb-1">Interview Setup</h1>
         <p className="text-slate-400 text-sm">Upload your resume and configure your mock interview session.</p>
       </div>
 
       {/* Upload card */}
-      <div className="glass-card p-6">
+      <div className="glass-card p-6 sm:p-7">
         <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
           <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500/20 text-brand-400 text-sm">📄</span>
           Upload Resume
@@ -83,7 +84,7 @@ export default function ResumeUpload() {
 
         <form onSubmit={handleUpload}>
           <div
-            className={`relative rounded-xl border-2 border-dashed p-8 text-center transition-all duration-200 cursor-pointer
+            className={`relative rounded-2xl border-2 border-dashed p-8 sm:p-10 text-center transition-all duration-200 cursor-pointer
               ${dragActive
                 ? 'border-brand-400 bg-brand-500/5'
                 : 'border-white/[0.08] hover:border-white/[0.15] hover:bg-white/[0.02]'
@@ -160,7 +161,7 @@ export default function ResumeUpload() {
       </div>
 
       {/* Session config card */}
-      <div className="glass-card p-6">
+      <div className="glass-card p-6 sm:p-7">
         <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
           <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-purple-500/20 text-purple-400 text-sm">⚙️</span>
           Configure Session

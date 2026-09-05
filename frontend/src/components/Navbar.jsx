@@ -16,18 +16,18 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-white/[0.06]"
-         style={{ background: 'rgba(15,23,42,0.75)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
+    <nav className="sticky top-0 z-50 border-b border-white/[0.08]"
+         style={{ background: 'rgba(9,15,31,0.78)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
+      <div className="mx-auto flex h-[4.5rem] max-w-6xl items-center justify-between px-4 sm:px-6">
 
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5 group">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-purple-600 shadow-glow-sm
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 via-brand-500 to-purple-600 shadow-glow-sm
                           transition-shadow duration-300 group-hover:shadow-glow">
-            <span className="text-white font-bold text-sm">P</span>
+            <span className="text-white font-black text-sm">P</span>
           </div>
           <span className="text-lg font-bold text-white tracking-tight hidden sm:inline">
-            Prep<span className="text-gradient">Pilot</span>
+            Prep<span className="text-gradient">Pilot</span><span className="ml-1 text-[9px] font-bold tracking-[0.18em] text-slate-500">AI</span>
           </span>
         </Link>
 
@@ -42,7 +42,7 @@ export default function Navbar() {
                   to={link.to}
                   className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
                     ${active
-                      ? 'text-white bg-white/[0.08]'
+                      ? 'text-white bg-brand-500/15 border border-brand-400/15'
                       : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
                     }`}
                 >
@@ -65,7 +65,7 @@ export default function Navbar() {
                 <div className="h-8 w-8 rounded-full bg-gradient-to-br from-brand-400 to-purple-500 flex items-center justify-center text-white text-xs font-bold shadow-glow-sm">
                   {user.fullName?.charAt(0)?.toUpperCase() || '?'}
                 </div>
-                <span className="text-slate-300 font-medium">{user.fullName}</span>
+                <span className="text-slate-300 font-medium max-w-28 truncate">{user.fullName}</span>
               </div>
               <button
                 onClick={() => { logout(); navigate('/login'); }}

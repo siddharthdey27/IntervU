@@ -75,6 +75,7 @@ export default function Progress() {
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 py-10 animate-fade-in">
       <div className="mb-8">
+        <div className="eyebrow mb-3">Performance insights</div>
         <h1 className="page-heading text-2xl sm:text-3xl mb-1">Progress Dashboard</h1>
         <p className="text-slate-400 text-sm">Your interview preparation stats at a glance.</p>
       </div>

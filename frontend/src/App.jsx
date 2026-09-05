@@ -12,7 +12,7 @@ import Navbar from './components/Navbar.jsx';
 
 export default function App() {
   return (
-    <div className="min-h-screen relative">
+    <div className="app-shell min-h-screen relative">
       <div className="ambient-bg" />
       <div className="relative z-10">
         <Navbar />
